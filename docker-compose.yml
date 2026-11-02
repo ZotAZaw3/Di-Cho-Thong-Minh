@@ -1,0 +1,13 @@
+# Chỉ chạy service api: DB, Auth, ảnh nằm trên Supabase.
+# Trên VPS: Nginx (cài trên máy host) proxy /it4788/ → 127.0.0.1:3000.
+services:
+  api:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TRUST_PROXY: "1"
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
