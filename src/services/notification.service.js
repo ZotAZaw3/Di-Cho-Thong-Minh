@@ -1,5 +1,6 @@
 import { query, queryOne } from '../config/db.js';
 import { push } from './gateways/index.js';
+import { getSetting } from './settings.service.js';
 
 // Nhắc đồ sắp hết hạn theo mô hình outbox (báo cáo tuần 2):
 //   1. scanExpiring() ghi vào bảng notifications, UNIQUE(fridge_item_id, user_id, type, notify_date)
@@ -75,14 +76,18 @@ async function retryLater(n, error) {
   return 'RETRY_WAIT';
 }
 
-async function sendOne(n) {
+async function sendOne(n, days) {
+  // Kiểm tra lại lúc gửi: món còn, người nhận còn trong nhóm, và hạn dùng chưa bị sửa ra ngoài khoảng nhắc
+  // (vd. đã gia hạn sau khi thông báo được tạo).
   const still = await queryOne(
     `SELECT 1 FROM fridge_items i JOIN group_members m ON m.group_id = i.group_id AND m.user_id = $2 AND m.left_at IS NULL
-     WHERE i.id = $1 AND i.quantity_base > 0`,
-    [n.fridge_item_id, n.user_id],
+     WHERE i.id = $1 AND i.quantity_base > 0 AND i.expires_on IS NOT NULL
+       AND CASE WHEN $3::varchar = 'EXPIRED' THEN i.expires_on < $4::date
+                ELSE i.expires_on BETWEEN $4::date AND $4::date + $5::int END`,
+    [n.fridge_item_id, n.user_id, n.type, n.notify_date, days],
   );
   if (!still) {
-    await finish(n.id, 'CANCELLED', 'Món đã dùng hết hoặc người nhận đã rời nhóm');
+    await finish(n.id, 'CANCELLED', 'Món đã dùng hết, đã đổi hạn dùng hoặc người nhận đã rời nhóm');
     return 'CANCELLED';
   }
   const tokens = (await query('SELECT token FROM device_tokens WHERE user_id = $1', [n.user_id])).map((r) => r.token);
@@ -109,14 +114,60 @@ async function sendOne(n) {
 export async function dispatchDue(batch = 50) {
   const stats = {};
   const due = await claimDue(batch);
+  const days = due.length ? await getSetting('expiry_days') : 0;
   for (const n of due) {
     let status;
     try {
-      status = await sendOne(n);
+      status = await sendOne(n, days);
     } catch (err) {
       status = await retryLater(n, String(err.message ?? err).slice(0, 500));
     }
     stats[status] = (stats[status] ?? 0) + 1;
   }
   return stats;
+}
+
+// ----- Hộp thư thông báo trong app -----
+
+const presentNotification = (n) => ({
+  id: n.id,
+  type: n.type,
+  title: n.title,
+  body: n.body,
+  fridgeItemId: n.fridge_item_id,
+  foodName: n.food_name,
+  expiryDate: n.expires_on,
+  date: n.notify_date,
+  isRead: n.read_at !== null,
+  readAt: n.read_at,
+  createdAt: n.created_at,
+});
+
+/** Thông báo của người dùng trong nhóm hiện tại, mới nhất trước. */
+export async function listForUser(user, group, { unread, page, limit }) {
+  const rows = await query(
+    `SELECT n.*, f.name AS food_name, i.expires_on::text AS expires_on, count(*) OVER () AS total,
+       count(*) FILTER (WHERE n.read_at IS NULL) OVER () AS unread_count
+     FROM notifications n
+     JOIN fridge_items i ON i.id = n.fridge_item_id
+     JOIN foods f ON f.id = i.food_id
+     WHERE n.user_id = $1 AND n.group_id = $2 AND ($3::boolean IS NOT TRUE OR n.read_at IS NULL)
+     ORDER BY n.created_at DESC, n.id DESC LIMIT $4 OFFSET $5`,
+    [user.id, group.id, unread ?? null, limit, (page - 1) * limit],
+  );
+  const unreadCount = unread || rows.length
+    ? (rows[0]?.unread_count ?? 0)
+    : (await queryOne('SELECT count(*)::int AS c FROM notifications WHERE user_id = $1 AND group_id = $2 AND read_at IS NULL', [user.id, group.id])).c;
+  return { total: rows[0]?.total ?? 0, unread: unreadCount, page, limit, notifications: rows.map(presentNotification) };
+}
+
+/** Đánh dấu đã đọc: theo danh sách id, hoặc tất cả khi không gửi id. */
+export async function markRead(user, group, { ids }) {
+  const rows = await query(
+    `UPDATE notifications SET read_at = now(), updated_at = now()
+     WHERE user_id = $1 AND group_id = $2 AND read_at IS NULL AND ($3::bigint[] IS NULL OR id = ANY($3::bigint[]))
+     RETURNING id`,
+    [user.id, group.id, ids?.length ? ids : null],
+  );
+  return { updated: rows.map((r) => r.id) };
 }

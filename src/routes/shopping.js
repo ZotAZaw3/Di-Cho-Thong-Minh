@@ -12,6 +12,7 @@ const member = [requireAuth, requireGroup];
 shoppingRouter.post('/shopping', member, validate(s.createList), c.createList);
 shoppingRouter.put('/shopping', member, validate(s.updateList), c.updateList);
 shoppingRouter.delete('/shopping', member, validate(s.listRef, 'input'), c.deleteList);
+shoppingRouter.post('/shopping/copy', member, validate(s.copyList), c.copyList);
 
 shoppingRouter.post('/shopping/task', member, validate(s.createTasks), c.createTasks);
 shoppingRouter.get('/shopping/task', member, validate(s.taskQuery, 'query'), c.getTasks);

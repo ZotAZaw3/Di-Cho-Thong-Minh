@@ -1,5 +1,6 @@
 import { query } from '../config/db.js';
 import { today } from '../repositories/fridge.repository.js';
+import { ApiError } from '../utils/response.js';
 
 // API mở rộng #55 · Thống kê mua sắm và tiêu thụ trong khoảng [from, to] (theo múi giờ nhóm),
 // tính từ inventory_logs và tasks.
@@ -7,8 +8,14 @@ import { today } from '../repositories/fridge.repository.js';
 export async function getReport(group, { from, to }) {
   const end = to ?? (await today(group.timeZone));
   const start = from ?? `${end.slice(0, 8)}01`;
+  if (start > end) throw new ApiError('BAD_REQUEST', { message: '"from" phải trước hoặc bằng "to"' });
   const params = [group.id, start, end, group.timeZone];
-  const range = `l.group_id = $1 AND (l.occurred_at AT TIME ZONE $4)::date BETWEEN $2 AND $3`;
+  // Lần "đã mua" bị bỏ đánh dấu sau đó (có log undo:task:<id> mới hơn) không tính: mua lại sẽ có log mới,
+  // tính cả hai thì số lượng và chi phí bị gấp đôi.
+  const range = `l.group_id = $1 AND (l.occurred_at AT TIME ZONE $4)::date BETWEEN $2 AND $3
+    AND NOT (l.event_type = 'purchase' AND l.idempotency_key LIKE 'purchase:task:%' AND EXISTS (
+      SELECT 1 FROM inventory_logs u WHERE u.group_id = l.group_id AND u.event_type = 'adjust_out' AND u.id > l.id
+        AND u.idempotency_key LIKE 'undo:task:' || split_part(l.idempotency_key, ':', 3) || ':%'))`;
 
   const [byFood, totals, tasks] = await Promise.all([
     query(

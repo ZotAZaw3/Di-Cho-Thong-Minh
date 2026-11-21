@@ -21,7 +21,12 @@ export const updateList = withAliases(
   },
 );
 
-export const listRef = z.object({ listId: id });
+export const listRef = withAliases({ listId: ['id'] }, { listId: id });
+
+export const copyList = withAliases(
+  { listId: ['id', 'sourceListId'], newName: ['name', 'title'], assignToUsername: ['assignedTo', 'assignee'], date: ['shoppingDate', 'newDate'] },
+  { listId: id, newName: optText(160), date: date.optional(), assignToUsername: login },
+);
 
 const taskInput = withAliases(
   { foodName: ['name'], unit: ['unitName'], assignToUsername: ['assignedTo'] },

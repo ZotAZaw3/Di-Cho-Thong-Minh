@@ -13,6 +13,10 @@ const member = [requireAuth, requireGroup];
 // Mở rộng · API #54 · T08.2. Đặt trước để không bị route khác nuốt.
 recipeRouter.get('/recipe/suggest', member, validate(s.suggestQuery, 'query'), c.suggest);
 
+recipeRouter.post('/recipe/favorite', member, validate(s.recipeRef, 'input'), c.addFavorite);
+recipeRouter.delete('/recipe/favorite', member, validate(s.recipeRef, 'input'), c.removeFavorite);
+recipeRouter.get('/recipe/favorite', member, validate(s.listQuery, 'query'), c.listFavorites);
+
 recipeRouter.post('/recipe', member, uploadImage, validate(s.createRecipe), c.createRecipe);
 recipeRouter.put('/recipe', member, uploadImage, validate(s.updateRecipe), c.updateRecipe);
 recipeRouter.delete('/recipe', member, validate(s.recipeRef, 'input'), c.deleteRecipe);

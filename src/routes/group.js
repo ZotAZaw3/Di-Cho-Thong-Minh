@@ -12,3 +12,5 @@ groupRouter.post('/user/group', requireAuth, validate(s.createGroup), c.createGr
 groupRouter.post('/user/group/add', requireAuth, requireGroup, requireLeader, validate(s.memberRef), c.addMember);
 groupRouter.delete('/user/group', requireAuth, requireGroup, requireLeader, validate(s.memberRef, 'input'), c.removeMember);
 groupRouter.get('/user/group', requireAuth, requireGroup, c.getMembers);
+groupRouter.post('/user/group/leave', requireAuth, requireGroup, c.leaveGroup);
+groupRouter.put('/user/group/leader', requireAuth, requireGroup, requireLeader, validate(s.memberRef), c.transferLeader);

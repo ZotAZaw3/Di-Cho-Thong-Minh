@@ -9,7 +9,7 @@ const LIST_SELECT = `
 const TASK_SELECT = `
   SELECT t.*, i.id AS item_id, i.shopping_list_id, i.food_id, i.unit_id, i.quantity, i.note AS item_note,
          COALESCE(t.note, i.note) AS note, f.name AS food_name, u.name AS unit_name, a.full_name AS assignee_name,
-         fu.factor_to_base, l.group_id
+         fu.factor_to_base, l.group_id, f.is_active AS food_active
   FROM tasks t
   JOIN shopping_list_items i ON i.id = t.shopping_list_item_id
   JOIN shopping_lists l ON l.id = i.shopping_list_id

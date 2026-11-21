@@ -88,7 +88,11 @@ Mọi lỗi, kể cả lỗi ràng buộc của Postgres, đều về `errorHand
 | `food.js` | 6 Thực phẩm | BE2 |
 | `fridge.js` | 7 Tủ lạnh | BE2 |
 | `meal.js` | 9 Bữa ăn | BE2 |
-| `recipe.js`, `report.js` | 10 Công thức, #54 gợi ý món, #55 thống kê | BE2 |
+| `recipe.js`, `report.js` | 10 Công thức, #54 gợi ý món, #55 thống kê, #56–58 công thức yêu thích | BE2 |
+| `notification.js` | #63, #64 hộp thư thông báo nhắc hết hạn | BE1 |
+
+API #56–66 bổ sung các chức năng đề bài yêu cầu mà 49 API gốc chưa có (dùng lại danh sách, nấu từ tủ lạnh, rời nhóm /
+chuyển trưởng nhóm, admin quản lý thực phẩm chung và cấu hình hệ thống). Chi tiết trong [docs/api.md](docs/api.md).
 
 ### Trả response và lỗi
 

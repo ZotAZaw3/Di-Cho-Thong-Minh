@@ -62,8 +62,10 @@ describe.skipIf(!hasDb)('Nhóm 8 · Mua sắm', () => {
     // Update task với isDone cũng đánh dấu được.
     const again = await call('put', '/shopping/task/', m1.token).send({ taskId: task.id, isDone: true });
     expect(again.body.data.completed).toBe(true);
+    // Lần mua đã hoàn tác không tính vào thống kê (không gấp đôi số lượng / chi phí).
     const report = await call('get', '/report/', leader.token);
-    expect(report.body.data.summary).toMatchObject({ purchaseEvents: 2, tasksDone: 1, totalCost: 35000 });
+    expect(report.body.data.summary).toMatchObject({ purchaseEvents: 1, tasksDone: 1, totalCost: 0 });
+    expect(report.body.data.foods.find((f) => f.foodName === 'Trứng gà').purchased).toBe(10);
   });
 
   it('sửa task, đổi người phụ trách danh sách, xóa task và danh sách; quyền', async () => {

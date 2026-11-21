@@ -13,3 +13,4 @@ mealRouter.post('/meal', member, validate(s.createPlan), c.createPlan);
 mealRouter.delete('/meal', member, validate(s.planRef, 'input'), c.deletePlan);
 mealRouter.put('/meal', member, validate(s.updatePlan), c.updatePlan);
 mealRouter.get('/meal', member, validate(s.byDate, 'query'), c.getByDate);
+mealRouter.post('/meal/cook', member, validate(s.cook), c.cookPlan);

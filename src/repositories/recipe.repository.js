@@ -1,18 +1,35 @@
 import { query, queryOne } from '../config/db.js';
+import { likeQ, nameMatches } from './search.js';
 
-export const listRecipes = (groupId, { foodId, q }, db) =>
+/**
+ * Công thức nhóm thấy được (chung + của nhóm). userId: đánh dấu is_favorite; favorite: chỉ lấy món yêu thích.
+ */
+export const listRecipes = (groupId, { foodId, q, userId, favorite } = {}, db) =>
   query(
-    `SELECT r.* FROM recipes r
+    `SELECT r.*, (f.user_id IS NOT NULL) AS is_favorite, f.saved_at AS favorited_at FROM recipes r
+     LEFT JOIN recipe_favorites f ON f.recipe_id = r.id AND f.user_id = $4
      WHERE r.is_active AND (r.group_id IS NULL OR r.group_id = $1)
        AND ($2::bigint IS NULL OR EXISTS (SELECT 1 FROM recipe_ingredients g WHERE g.recipe_id = r.id AND g.food_id = $2))
-       AND ($3::text IS NULL OR r.title ILIKE '%' || $3 || '%')
-     ORDER BY r.title, r.id`,
-    [groupId, foodId ?? null, q ?? null],
+       AND ${nameMatches('r.title', 3)}
+       AND ($5::boolean IS NOT TRUE OR f.user_id IS NOT NULL)
+     ORDER BY ${favorite ? 'f.saved_at DESC, ' : ''}r.title, r.id`,
+    [groupId, foodId ?? null, likeQ(q), userId ?? null, favorite ?? null],
     db,
   );
 
-export const findRecipe = (groupId, id, db) =>
-  queryOne('SELECT * FROM recipes WHERE is_active AND (group_id IS NULL OR group_id = $1) AND id = $2', [groupId, id], db);
+export const findRecipe = (groupId, id, db, userId = null) =>
+  queryOne(
+    `SELECT r.*, (f.user_id IS NOT NULL) AS is_favorite FROM recipes r
+     LEFT JOIN recipe_favorites f ON f.recipe_id = r.id AND f.user_id = $3
+     WHERE r.is_active AND (r.group_id IS NULL OR r.group_id = $1) AND r.id = $2`,
+    [groupId, id, userId],
+    db,
+  );
+
+export const addFavorite = (userId, recipeId, db) =>
+  query('INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [userId, recipeId], db);
+export const removeFavorite = async (userId, recipeId, db) =>
+  (await query('DELETE FROM recipe_favorites WHERE user_id = $1 AND recipe_id = $2 RETURNING recipe_id', [userId, recipeId], db)).length > 0;
 
 export const ingredientsOf = (recipeIds, db) =>
   recipeIds.length === 0

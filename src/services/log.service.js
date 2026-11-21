@@ -1,7 +1,9 @@
 import { query } from '../config/db.js';
+import { ApiError } from '../utils/response.js';
 
 // API #23 Get logs (admin): đọc api_logs, mới nhất trước.
 export async function getLogs({ page, limit, userId, method, status, from, to }) {
+  if (from && to && from > to) throw new ApiError('BAD_REQUEST', { message: '"from" phải trước hoặc bằng "to"' });
   const rows = await query(
     `SELECT l.*, u.email, count(*) OVER () AS total
      FROM api_logs l LEFT JOIN users u ON u.id = l.user_id

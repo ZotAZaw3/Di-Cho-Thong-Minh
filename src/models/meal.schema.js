@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { optText, id, date, mealType, isMealTypeWord, withAliases } from './common.js';
+import { optText, id, date, mealType, isMealTypeWord, withAliases, bool, quantity } from './common.js';
 
 // Nhóm 9. Tài liệu: foodName + timestamp + name ("sáng/trưa/tối"); app: mealName + date + mealType.
 // "name" là bữa nếu là sáng/trưa/tối, ngược lại coi là tên món.
@@ -54,3 +54,8 @@ export const updatePlan = z.preprocess(
 
 export const planRef = withAliases({ planId: ['id', 'mealId'] }, { planId: id });
 export const byDate = z.object({ date: date.optional(), from: date.optional(), to: date.optional() });
+
+export const cook = withAliases(
+  { planId: ['id', 'mealId'], unit: ['unitName'] },
+  { planId: id, force: bool.optional(), quantity: quantity.optional(), unit: optText(60) },
+);

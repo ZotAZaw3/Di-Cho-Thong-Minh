@@ -41,6 +41,7 @@ export const presentFood = (f) => ({
   unitName: f.unit_name,
   imageUrl: f.image_url,
   isGlobal: f.group_id === null,
+  units: f.units ?? undefined,
   createdAt: f.created_at,
 });
 
@@ -137,6 +138,7 @@ export const presentRecipe = (r, ingredients = []) => {
     duration: minutes ? `${minutes} phút` : '',
     imageUrl: r.image_url,
     isGlobal: r.group_id === null,
+    isFavorite: Boolean(r.is_favorite),
     ingredients: ingredients.map((g) => ({
       foodId: g.food_id,
       foodName: g.food_name,

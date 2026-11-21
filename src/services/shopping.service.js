@@ -12,9 +12,24 @@ import { ApiError } from '../utils/response.js';
 const listNotFound = () => new ApiError('NOT_FOUND', { message: 'Không tìm thấy danh sách mua sắm' });
 const taskNotFound = () => new ApiError('NOT_FOUND', { message: 'Không tìm thấy nhiệm vụ' });
 
+const canManage = (user, group, list) => group.role === 'leader' || list.created_by === user.id;
+
 function assertCanManage(user, group, list) {
-  if (group.role !== 'leader' && list.created_by !== user.id) {
+  if (!canManage(user, group, list)) {
     throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm hoặc người tạo danh sách được thực hiện' });
+  }
+}
+
+/** Phân công cho người khác là việc của trưởng nhóm / người tạo danh sách; thành viên chỉ nhận việc cho mình. */
+function assertCanAssign(user, group, list, assigneeId) {
+  if (assigneeId !== undefined && assigneeId !== user.id && !canManage(user, group, list)) {
+    throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm hoặc người tạo danh sách được phân công cho người khác' });
+  }
+}
+
+function assertActive(list) {
+  if (list.list_status !== 'active') {
+    throw new ApiError('CONFLICT', { message: 'Danh sách đã lưu trữ. Sao chép danh sách (POST shopping/copy/) để dùng lại' });
   }
 }
 
@@ -77,6 +92,41 @@ export async function deleteList(user, group, { listId }) {
   });
 }
 
+/**
+ * Dùng lại danh sách cho lần mua sau (đề bài: "lưu lại để sử dụng cho những lần mua sắm sau"):
+ * tạo danh sách mới với cùng mặt hàng, số lượng, đơn vị; mọi mặt hàng về trạng thái chưa mua.
+ * Người được giao: assignToUsername nếu gửi, không thì giữ người cũ nếu còn trong nhóm.
+ */
+export async function copyList(user, group, { listId, newName, date, assignToUsername }) {
+  return withTransaction(async (db) => {
+    const source = await shopping.findList(group.id, listId, db);
+    if (!source) throw listNotFound();
+    const assignee = await resolveAssignee(group, assignToUsername, db);
+    if (assignee !== undefined && assignee !== user.id && group.role !== 'leader') {
+      throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm được phân công cho người khác' });
+    }
+    const keep = async (id) => (id && (await shopping.findMember(group.id, id, db)) ? id : undefined);
+    const listAssignee = assignee ?? (await keep(source.assigned_to));
+    const day = date ?? (await fridge.today(group.timeZone, db));
+    const { id } = await shopping.insertList(
+      { groupId: group.id, title: newName ?? source.title, date: day, assignedTo: listAssignee, note: source.note, createdBy: user.id },
+      db,
+    );
+    const skipped = [];
+    for (const t of await shopping.tasksOfLists([source.id], db)) {
+      if (!t.food_active) {
+        skipped.push(t.food_name);
+        continue;
+      }
+      const item = await shopping.insertItem({ listId: id, foodId: t.food_id, unitId: t.unit_id, quantity: t.quantity, note: t.item_note, addedBy: user.id }, db);
+      const assignedTo = assignee ?? (await keep(t.assigned_to)) ?? listAssignee ?? user.id;
+      await shopping.insertTask({ itemId: item.id, assignedBy: user.id, assignedTo }, db);
+    }
+    const view = await listView(group, id, db);
+    return skipped.length ? { ...view, skippedFoods: skipped } : view;
+  });
+}
+
 // ----- Nhiệm vụ (mặt hàng) -----
 
 /** Thêm nhiều mặt hàng một lần: tất cả cùng thành công hoặc rollback toàn bộ. */
@@ -84,6 +134,7 @@ export async function createTasks(user, group, { listId, tasks }) {
   return withTransaction(async (db) => {
     const list = await shopping.findList(group.id, listId, db, { lock: true });
     if (!list) throw listNotFound();
+    assertActive(list);
     const seen = new Set();
     const created = [];
     for (const t of tasks) {
@@ -94,7 +145,9 @@ export async function createTasks(user, group, { listId, tasks }) {
       seen.add(food.id);
       const { unitId } = await toBaseUnit(food, t.quantity, t.unit, db);
       const item = await shopping.insertItem({ listId: list.id, foodId: food.id, unitId, quantity: t.quantity, note: t.note, addedBy: user.id }, db);
-      const assignedTo = (await resolveAssignee(group, t.assignToUsername, db)) ?? list.assigned_to ?? user.id;
+      const chosen = await resolveAssignee(group, t.assignToUsername, db);
+      assertCanAssign(user, group, list, chosen);
+      const assignedTo = chosen ?? list.assigned_to ?? user.id;
       const task = await shopping.insertTask({ itemId: item.id, assignedBy: user.id, assignedTo }, db);
       created.push(task.id);
     }
@@ -125,6 +178,14 @@ export async function updateTask(user, group, input) {
   const result = await withTransaction(async (db) => {
     const task = await shopping.findTask(group.id, taskId, db, { lock: true });
     if (!task) throw taskNotFound();
+    // Đã mua thì số lượng đã cộng vào tủ lạnh: sửa món / số lượng phải hoàn tác trước.
+    const same = (a, b) => !a || a.toLowerCase() === b?.toLowerCase();
+    const changesStock =
+      !same(newFoodName, task.food_name) || (newQuantity !== undefined && newQuantity !== task.quantity) || !same(newUnit, task.unit_name);
+    if (task.task_status === 'done' && changesStock && isDone !== false) {
+      throw new ApiError('CONFLICT', { message: 'Mặt hàng đã mua. Bỏ đánh dấu đã mua trước khi sửa món hoặc số lượng' });
+    }
+    if (isDone === false && task.task_status === 'done') await setTaskDone(user, group, { taskId: task.id, done: false }, db);
     let food = { id: task.food_id, name: task.food_name, unit_name: null, base_unit_id: null };
     let foodId;
     if (newFoodName) {
@@ -143,10 +204,13 @@ export async function updateTask(user, group, input) {
     }
     await shopping.updateItem(task.item_id, { foodId, unitId, quantity: newQuantity }, db);
     const assignedTo = await resolveAssignee(group, newAssignToUsername, db);
+    if (assignedTo !== undefined && assignedTo !== task.assigned_to) {
+      assertCanAssign(user, group, await shopping.findList(group.id, task.shopping_list_id, db), assignedTo);
+    }
     await shopping.updateTask(task.id, { assignedTo, note: newNote }, db);
     return task.id;
   });
-  if (isDone !== undefined) return setTaskDone(user, group, { taskId: result, done: isDone });
+  if (isDone) return setTaskDone(user, group, { taskId: result, done: true });
   return presentTask(await shopping.findTask(group.id, result));
 }
 
@@ -155,8 +219,9 @@ export async function updateTask(user, group, input) {
  * Gọi lại nhiều lần vẫn chỉ cộng một lần: task đã 'done' thì bỏ qua, và inventory_logs có
  * khóa idempotency `purchase:task:<id>`. done=false thì hoàn tác (trừ lại phần đã cộng).
  */
-export async function setTaskDone(user, group, { taskId, done = true, expiryDate, storageLocation, totalCost }) {
-  return withTransaction(async (db) => {
+export async function setTaskDone(user, group, { taskId, done = true, expiryDate, storageLocation, totalCost }, outerDb) {
+  const run = (fn) => (outerDb ? fn(outerDb) : withTransaction(fn));
+  return run(async (db) => {
     const task = await shopping.findTask(group.id, taskId, db, { lock: true });
     if (!task) throw taskNotFound();
     const purchaseKey = `purchase:task:${task.id}`;

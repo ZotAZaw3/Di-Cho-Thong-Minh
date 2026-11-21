@@ -15,6 +15,9 @@ và trả về:
 - Thực phẩm được gọi theo tên (`foodName`, không phân biệt hoa thường) hoặc `foodId`.
 - Số lượng nhận số hoặc chuỗi (`"10"`, `"1,5"`). Ngày nhận `YYYY-MM-DD`, chuỗi ISO hoặc timestamp.
 - Mọi object trả về có `id`, kèm tên trường tài liệu dùng (`listId`, `taskId`, `planId`, `recipeId`, `itemId`).
+- Số thứ tự: 1–49 theo tài liệu API môn học, 50–55 là API mở rộng trong sheet, 56–66 *(đề bài)* là API thêm để
+  phủ các chức năng còn thiếu trong đề bài IT4788 (công thức yêu thích, dùng lại danh sách, nấu từ tủ lạnh,
+  rời nhóm, hộp thư thông báo, admin quản lý thực phẩm chung và cấu hình).
 
 ## Bảng mã response
 
@@ -72,6 +75,10 @@ Tài liệu API gốc (bảng mã) chưa có trong project, nên phần lớn m�
 | 10 | `POST user/group/add/` | Trưởng nhóm | `username` (hoặc email) | `{ group, members }` |
 | 11 | `DELETE user/group/` | Trưởng nhóm | `username` | `{ group, members }` |
 | 12 | `GET user/group/` | Nhóm | | `{ group, members }` |
+| 61 | `POST user/group/leave/` *(đề bài)* | Nhóm | | `null`; trưởng nhóm rời thì thành viên vào sớm nhất lên thay, không còn ai thì nhóm được lưu trữ |
+| 62 | `PUT user/group/leader/` *(đề bài)* | Trưởng nhóm | `username` (hoặc email) của một thành viên | `{ group, members }`; người cũ thành thành viên |
+
+Thành viên rời nhóm hoặc bị xóa: mặt hàng chưa mua và danh sách đang giao cho người đó chuyển sang trưởng nhóm.
 
 ## 4, 5. Admin
 
@@ -85,19 +92,32 @@ Tài liệu API gốc (bảng mã) chưa có trong project, nên phần lớn m�
 | 23 | `GET admin/logs/` | Admin | `?page&limit&userId&method&status&from&to` | `{ total, logs }` |
 | 53 | `GET admin/user/` *(mở rộng)* | Admin | `?q&status&page&limit` | `{ total, users }` |
 | 53 | `PUT admin/user/` *(mở rộng)* | Admin | `userId` hoặc `email`, `status` (`active`/`blocked`, hoặc `block`/`unblock`) | `user` |
+| 65 | `GET admin/food/` *(đề bài)* | Admin | `?q&category&scope` (`global` mặc định, `all` = cả món riêng của các nhóm) | danh sách food |
+| 65 | `POST admin/food/` *(đề bài)* | Admin | như `POST food/`, tạo vào danh mục chung | food (`isGlobal: true`) |
+| 65 | `PUT admin/food/` *(đề bài)* | Admin | như `PUT food/`, sửa món trong danh mục chung | food |
+| 65 | `DELETE admin/food/` *(đề bài)* | Admin | `name` | `null` |
+| 66 | `GET admin/config/` *(đề bài)* | Admin | | `[{ key, name, value, defaultValue, isDefault, description }]` |
+| 66 | `PUT admin/config/` *(đề bài)* | Admin | `{ expiryDays: 5 }` (nhiều khóa một lần) hoặc `{ key, value }`; `null` = về mặc định | như GET |
+
+Cấu hình hiện có: `expiry_days` (nhắc trước bao nhiêu ngày, 0–30, mặc định `EXPIRY_DAYS` = 3),
+`log_retention_days` (1–365, mặc định 30), `suggest_limit` (số món gợi ý mặc định, 1–50, mặc định 10).
 
 ## 6. Thực phẩm
 
-Danh mục chung (seed) dùng cho mọi nhóm; mỗi nhóm thêm được món riêng. Món chung không sửa/xóa được từ app.
+Danh mục chung (seed, admin quản lý qua `admin/food/`) dùng cho mọi nhóm; mỗi nhóm thêm được món riêng.
+Món chung không sửa/xóa được từ app. Tìm kiếm không phân biệt dấu: `?q=thit ga` thấy "Thịt gà".
 
 | # | API | Auth | Body | Bí danh | Trả về |
 | --- | --- | --- | --- | --- | --- |
-| 24 | `POST food/` | Nhóm | form-data: `name`, `foodCategoryName`, `unitName`, `image?` | `categoryName`, `unit` | food |
-| 25 | `PUT food/` | Nhóm | `name`, `newName?`, `newCategory?`, `newUnit?`, `image?` | `newCategoryName`, `newUnitName` | food |
+| 24 | `POST food/` | Nhóm | form-data: `name`, `foodCategoryName`, `unitName`, `units?`, `image?` | `categoryName`, `unit` | food |
+| 25 | `PUT food/` | Nhóm | `name`, `newName?`, `newCategory?`, `newUnit?`, `units?`, `image?` | `newCategoryName`, `newUnitName` | food |
 | 26 | `DELETE food/` | Nhóm | `name` | | `null` |
-| 27 | `GET food/` | Nhóm | | | `{ foods, categories, units }` |
+| 27 | `GET food/` | Nhóm | `?q` (tên), `?category` | | `{ foods, categories, units }` |
 | 28 | `GET food/unit/` | Bearer | | | danh sách unit |
 | 29 | `GET food/category/` | Bearer | | | danh sách category |
+
+`units` (đơn vị phụ): `[{ unitName: 'gói', factor: 6 }]` nghĩa là 1 gói = 6 đơn vị gốc (form-data gửi chuỗi JSON).
+Food trả về có `units: [{ unitName, factor }]` (gồm cả đơn vị gốc, `factor` 1) và `isGlobal`.
 
 ## 7. Tủ lạnh
 
@@ -109,7 +129,7 @@ Nơi để: `fridge`/`freezer`/`pantry` hoặc `Tủ lạnh`/`Ngăn đông`/`T�
 | 30 | `POST fridge/` | Nhóm | `foodName` hoặc `foodId`, `quantity`, `unit?`, `useWithin?` (số ngày) hoặc `expiryDate?`, `storageLocation?`, `note?` | `location`, `unitName` | item |
 | 31 | `PUT fridge/` | Nhóm | `itemId`, `newQuantity?`, `newUnit?`, `newUseWithin?`/`newExpiryDate?`, `newNote?`, `newStorageLocation?`, `newFoodName?` | `id` | item |
 | 32 | `DELETE fridge/` | Nhóm | `foodName` (mọi món của thực phẩm đó) hoặc `itemId` | | `{ deleted: [id] }` |
-| 33 | `GET fridge/` | Nhóm | `?q&category&location` | | danh sách, hạn gần nhất trước |
+| 33 | `GET fridge/` | Nhóm | `?q&category&location` (`q` không phân biệt dấu) | | danh sách, hạn gần nhất trước |
 | 34 | `GET fridge/:foodName/` | Nhóm | | | danh sách của thực phẩm đó |
 
 Item: `id`, `foodId`, `foodName`, `quantity`, `unitName`, `expiryDate`, `useWithin` (còn bao nhiêu ngày),
@@ -119,6 +139,10 @@ Header `Idempotency-Key` trên `POST fridge/`: gửi lại cùng khóa không th
 ## 8. Mua sắm
 
 Một "task" = một mặt hàng trong danh sách + người được giao. Thêm món mới mặc định giao cho người phụ trách danh sách.
+Mọi thành viên thêm / sửa món được, nhưng chỉ trưởng nhóm hoặc người tạo danh sách giao việc cho người khác
+(thành viên chỉ tự nhận việc, không thì `00284`). Danh sách đã lưu trữ (`status: archived`) không thêm món được:
+sao chép để dùng lại. Món đã mua thì không đổi món / số lượng / đơn vị (`CONFLICT`) cho tới khi bỏ đánh dấu
+(gửi kèm `isDone: false` trong cùng lần `PUT shopping/task/` cũng được).
 
 | # | API | Auth | Body / query | Bí danh | Trả về |
 | --- | --- | --- | --- | --- | --- |
@@ -131,6 +155,7 @@ Một "task" = một mặt hàng trong danh sách + người được giao. Thê
 | 41 | `PUT shopping/task/` | Nhóm | `taskId`, `newFoodName?`, `newQuantity?`, `newUnit?`, `newAssignToUsername?`, `isDone?` | | task |
 | 51 | `GET shopping/` *(mở rộng)* | Nhóm | `?status&date&mine` | | các list kèm `tasks` |
 | 52 | `PUT shopping/task/done/` *(mở rộng)* | Nhóm | `taskId`, `done?` (mặc định `true`, `false` = hoàn tác), `expiryDate?`, `storageLocation?`, `totalCost?` | | task; món được cộng vào tủ lạnh |
+| 59 | `POST shopping/copy/` *(đề bài)* | Nhóm | `listId`, `newName?`, `date?`, `assignToUsername?` | `id`, `name`, `shoppingDate` | list mới (mã tạo mới), mọi món chưa mua; `skippedFoods` nếu có thực phẩm đã bị xóa |
 
 ## 9. Bữa ăn
 
@@ -142,7 +167,13 @@ Bữa: `breakfast`/`lunch`/`dinner` hoặc `sáng`/`trưa`/`tối`/`Bữa sáng`
 | 42 | `POST meal/` | Nhóm | `foodName?`/`recipeId?`/`mealName?`, `timestamp` (ngày), `name` (bữa) | `date`, `mealType` | plan |
 | 43 | `DELETE meal/` | Nhóm | `planId` | | `{ planId }` |
 | 44 | `PUT meal/` | Nhóm | `planId`, `newFoodName?`, `newRecipeId?`, `newMealName?`, `newName?` (bữa), `newTimestamp?` | | plan. Không có `planId` thì tạo mới (app hiện gọi như vậy) |
-| 45 | `GET meal/` | Nhóm | `?date` (mặc định hôm nay) hoặc `?from&to` | | các plan theo bữa |
+| 45 | `GET meal/` | Nhóm | `?date` (mặc định hôm nay) hoặc `?from&to` (xem theo tuần, tối đa 62 ngày) | | các plan theo bữa |
+| 60 | `POST meal/cook/` *(đề bài)* | Nhóm | `planId`, `force?`, `quantity?` + `unit?` (khi món là thực phẩm) | `id`, `mealId` | `{ meal, used, missing }` |
+
+`POST meal/cook/`: đánh dấu đã nấu và trừ nguyên liệu khỏi tủ lạnh (món hết hạn sớm dùng trước), ghi vào thống kê
+tiêu thụ. Món là công thức: lượng theo khẩu phần (`servings` của plan / `servings` của công thức). Thiếu nguyên liệu
+bắt buộc thì trả `00279` với `data.missing: [{ foodName, unitName, need, have }]`; gửi `force: true` để vẫn nấu với
+phần đang có. Nấu lần hai: `CONFLICT`. Xóa món đã nấu chỉ hủy mục đó, lịch sử tiêu thụ giữ nguyên.
 
 ## 10. Công thức
 
@@ -151,9 +182,15 @@ Bữa: `breakfast`/`lunch`/`dinner` hoặc `sáng`/`trưa`/`tối`/`Bữa sáng`
 | 46 | `POST recipe/` | Nhóm | `name`, `foodName?` (nguyên liệu chính), `htmlContent`, `description?`, `servings?`, `prepMinutes?`, `cookMinutes?`, `ingredients?` | `title`, `content`, `duration` | recipe |
 | 47 | `PUT recipe/` | Nhóm | `recipeId`, `newName?`, `newHtmlContent?`, `newDescription?`, `newFoodName?`, `newIngredients?` | | recipe |
 | 48 | `DELETE recipe/` | Nhóm | `recipeId` | | `{ recipeId }` |
-| 49 | `GET recipe/` | Nhóm | `?foodId` (bỏ trống = tất cả), `?q` | | danh sách |
-| 54 | `GET recipe/suggest/` *(mở rộng)* | Nhóm | `?limit` | | công thức xếp theo tỉ lệ nguyên liệu có sẵn, ưu tiên đồ sắp hết hạn |
+| 49 | `GET recipe/` | Nhóm | `?foodId` (bỏ trống = tất cả), `?q` (không phân biệt dấu), `?favorite=true` | | danh sách, mỗi món có `isFavorite` |
+| 54 | `GET recipe/suggest/` *(mở rộng)* | Nhóm | `?limit` (mặc định theo cấu hình `suggest_limit`) | | công thức xếp theo tỉ lệ nguyên liệu có sẵn, ưu tiên đồ sắp hết hạn, rồi món yêu thích |
 | 55 | `GET report/` *(mở rộng)* | Nhóm | `?from&to` (mặc định đầu tháng → hôm nay) | | tổng hợp mua / thêm / dùng / bỏ theo thực phẩm |
+| 56 | `POST recipe/favorite/` *(đề bài)* | Nhóm | `recipeId` | `id` | recipe (`isFavorite: true`); gọi lại không lỗi |
+| 57 | `DELETE recipe/favorite/` *(đề bài)* | Nhóm | `recipeId` | `id` | `{ recipeId, isFavorite: false }` |
+| 58 | `GET recipe/favorite/` *(đề bài)* | Nhóm | `?q&foodId` | | công thức yêu thích của người gọi, mới thích trước |
+
+Thống kê: lần "đã mua" bị bỏ đánh dấu không được tính (mua lại không bị gấp đôi số lượng và chi phí).
+`from` sau `to` trả `00279`.
 
 `ingredients`: `[{ foodName, quantity, unit?, optional? }]` (form-data gửi dạng chuỗi JSON).
 
@@ -162,3 +199,12 @@ Bữa: `breakfast`/`lunch`/`dinner` hoặc `sáng`/`trưa`/`tối`/`Bữa sáng`
 Job hằng ngày (8:00 giờ Việt Nam) ghi thông báo cho đồ còn ≤ 3 ngày và đồ đã hết hạn hôm qua vào bảng
 `notifications` cho mọi thành viên nhóm. Worker mỗi phút gửi FCM tới các token đã đăng ký qua `PUT user/device/`,
 thử lại tối đa 3 lần, xóa token không còn hợp lệ. Payload `data` của thông báo: `type`, `fridgeItemId`, `notificationId`.
+Lúc gửi, server kiểm tra lại: món đã dùng hết, đã gia hạn ra ngoài khoảng nhắc, hoặc người nhận đã rời nhóm thì hủy.
+Số ngày nhắc trước do admin chỉnh (`PUT admin/config/`, `expiryDays`).
+
+| # | API | Auth | Body / query | Trả về |
+| --- | --- | --- | --- | --- |
+| 63 | `GET notification/` *(đề bài)* | Nhóm | `?unread=true&page&limit` | `{ total, unread, notifications: [{ id, type, title, body, fridgeItemId, foodName, expiryDate, isRead, createdAt }] }` |
+| 64 | `PUT notification/read/` *(đề bài)* | Nhóm | `ids?` (mảng hoặc `"1,2"`; bỏ trống = tất cả) | `{ updated: [id] }` |
+
+Hộp thư này hiện cả thông báo chưa gửi được qua FCM (vd. máy chưa đăng ký token), nên app luôn xem lại được.

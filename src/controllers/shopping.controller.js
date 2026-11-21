@@ -12,3 +12,4 @@ export const getTasks = async (req, res) => send(res, 'OK', await shopping.getTa
 export const deleteTask = async (req, res) => send(res, 'OK', await shopping.deleteTask(req.user, req.group, req.valid));
 export const updateTask = async (req, res) => send(res, 'OK', await shopping.updateTask(req.user, req.group, req.valid));
 export const setTaskDone = async (req, res) => send(res, 'OK', await shopping.setTaskDone(req.user, req.group, req.valid));
+export const copyList = async (req, res) => send(res, 'CREATED', await shopping.copyList(req.user, req.group, req.valid));

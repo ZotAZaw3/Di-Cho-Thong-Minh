@@ -1,4 +1,5 @@
 import { query, queryOne } from '../config/db.js';
+import { likeQ, nameMatches } from './search.js';
 
 // Category, unit, thực phẩm và quy đổi đơn vị (food_units).
 
@@ -35,12 +36,26 @@ export const unitInUse = async (id, db) =>
 
 // ----- Food -----
 const FOOD_SELECT = `
-  SELECT f.*, c.name AS category_name, u.name AS unit_name
+  SELECT f.*, c.name AS category_name, u.name AS unit_name,
+    (SELECT json_agg(json_build_object('unitName', fu_u.name, 'factor', fu.factor_to_base) ORDER BY fu.factor_to_base, fu_u.name)
+     FROM food_units fu JOIN units fu_u ON fu_u.id = fu.unit_id WHERE fu.food_id = f.id) AS units
   FROM foods f JOIN categories c ON c.id = f.category_id JOIN units u ON u.id = f.base_unit_id`;
 
-/** Thực phẩm nhóm thấy được: danh mục chung + món riêng của nhóm. */
-export const listFoods = (groupId, db) =>
-  query(`${FOOD_SELECT} WHERE f.is_active AND (f.group_id IS NULL OR f.group_id = $1) ORDER BY c.name, f.name`, [groupId], db);
+/**
+ * Thực phẩm nhóm thấy được: danh mục chung + món riêng của nhóm (groupId null = chỉ danh mục chung).
+ * q: tìm theo tên (không phân biệt dấu hoa/thường), category: tên category.
+ */
+export const listFoods = (groupId, { q, category, scope } = {}, db) =>
+  query(
+    `${FOOD_SELECT}
+     WHERE f.is_active
+       AND ($4::text = 'all' OR f.group_id IS NULL OR f.group_id = $1)
+       AND ${nameMatches('f.name', 2)}
+       AND ($3::text IS NULL OR lower(c.name) = lower($3))
+     ORDER BY c.name, f.name`,
+    [groupId, likeQ(q), category ?? null, scope ?? 'group'],
+    db,
+  );
 
 /** Tìm theo tên; trùng tên thì ưu tiên món riêng của nhóm. */
 export const findFoodByName = (groupId, name, db) =>
@@ -83,6 +98,15 @@ export const foodInStock = async (foodId, db) =>
     ),
   );
 
+/** Thêm hoặc sửa hệ số quy đổi của một đơn vị phụ. */
+export const upsertFoodUnit = (foodId, unitId, factor, db) =>
+  query(
+    `INSERT INTO food_units (food_id, unit_id, factor_to_base) VALUES ($1, $2, $3)
+     ON CONFLICT (food_id, unit_id) DO UPDATE SET factor_to_base = EXCLUDED.factor_to_base`,
+    [foodId, unitId, factor],
+    db,
+  );
+
 /** Đảm bảo food_units có dòng cho đơn vị (mặc định hệ số 1 = đơn vị gốc). */
 export const ensureFoodUnit = (foodId, unitId, factor = 1, db) =>
   query(
@@ -104,9 +128,9 @@ export const findFoodUnit = (foodId, unitName, db) =>
 export const similarFoodNames = async (groupId, name, db) =>
   (
     await query(
-      `SELECT name FROM foods WHERE is_active AND (group_id IS NULL OR group_id = $1) AND name ILIKE '%' || $2 || '%'
+      `SELECT name FROM foods WHERE is_active AND (group_id IS NULL OR group_id = $1) AND ${nameMatches('name', 2)}
        ORDER BY length(name), name LIMIT 3`,
-      [groupId, name],
+      [groupId, likeQ(name)],
       db,
     )
   ).map((r) => r.name);

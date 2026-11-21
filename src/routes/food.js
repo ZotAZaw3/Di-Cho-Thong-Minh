@@ -13,6 +13,6 @@ const member = [requireAuth, requireGroup];
 foodRouter.post('/food', member, uploadImage, validate(s.createFood), c.createFood);
 foodRouter.put('/food', member, uploadImage, validate(s.updateFood), c.updateFood);
 foodRouter.delete('/food', member, validate(s.deleteFood, 'input'), c.deleteFood);
-foodRouter.get('/food', member, c.listFoods);
+foodRouter.get('/food', member, validate(s.foodQuery, 'query'), c.listFoods);
 foodRouter.get('/food/unit', requireAuth, c.listUnits);
 foodRouter.get('/food/category', requireAuth, c.listCategories);

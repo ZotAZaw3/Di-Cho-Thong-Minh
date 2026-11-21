@@ -3,6 +3,7 @@ import * as groups from '../repositories/group.repository.js';
 import * as users from '../repositories/user.repository.js';
 import { presentMember } from '../models/presenters.js';
 import { ApiError } from '../utils/response.js';
+import { leaveCurrentGroup } from './user.service.js';
 
 // Nhóm 3 · Nhóm gia đình. Mỗi người ở tối đa một nhóm; người tạo là trưởng nhóm.
 
@@ -44,6 +45,27 @@ export async function removeMember(user, group, { username }) {
     if (target.id === user.id) throw new ApiError('FORBIDDEN', { message: 'Trưởng nhóm không thể tự xóa mình khỏi nhóm' });
     const removed = await groups.markLeft(group.id, target.id, db);
     if (!removed) throw new ApiError('NOT_FOUND', { message: 'Người này không ở trong nhóm' });
+    await groups.reassignOpenWork(group.id, target.id, user.id, db);
+    return groupView(group.id, db);
+  });
+}
+
+/** Thành viên tự rời nhóm (trưởng nhóm rời thì người vào sớm nhất lên thay). */
+export async function leaveGroup(user) {
+  await withTransaction((db) => leaveCurrentGroup(user.id, db));
+  return null;
+}
+
+/** Trưởng nhóm chuyển quyền cho một thành viên khác. */
+export async function transferLeader(user, group, { username }) {
+  return withTransaction(async (db) => {
+    const target = await users.findUserByLogin(username, db);
+    if (!target) throw new ApiError('NOT_FOUND', { message: `Không tìm thấy người dùng "${username}"` });
+    if (target.id === user.id) throw new ApiError('BAD_REQUEST', { message: 'Bạn đang là trưởng nhóm' });
+    const membership = await groups.findActiveMembership(target.id, db);
+    if (membership?.id !== group.id) throw new ApiError('NOT_FOUND', { message: 'Người này không ở trong nhóm' });
+    await groups.setRole(group.id, user.id, 'member', db);
+    await groups.setRole(group.id, target.id, 'leader', db);
     return groupView(group.id, db);
   });
 }

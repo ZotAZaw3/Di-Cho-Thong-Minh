@@ -61,3 +61,22 @@ export const EXTENSION_APIS = [
   [54, 'GET', '/recipe/suggest/'],
   [55, 'GET', '/report/?from=2026-11-01&to=2026-11-30'],
 ];
+
+// API thêm theo đề bài IT4788 (ngoài sheet): xem docs/api.md, mục "Bổ sung theo đề bài".
+export const SRS_APIS = [
+  [56, 'POST', '/recipe/favorite/'],
+  [57, 'DELETE', '/recipe/favorite/'],
+  [58, 'GET', '/recipe/favorite/'],
+  [59, 'POST', '/shopping/copy/'],
+  [60, 'POST', '/meal/cook/'],
+  [61, 'POST', '/user/group/leave/'],
+  [62, 'PUT', '/user/group/leader/'],
+  [63, 'GET', '/notification/'],
+  [64, 'PUT', '/notification/read/'],
+  [65, 'GET', '/admin/food/'],
+  [65, 'POST', '/admin/food/'],
+  [65, 'PUT', '/admin/food/'],
+  [65, 'DELETE', '/admin/food/'],
+  [66, 'GET', '/admin/config/'],
+  [66, 'PUT', '/admin/config/'],
+];

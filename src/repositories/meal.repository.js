@@ -12,7 +12,8 @@ const ORDER = `ORDER BY p.plan_date, CASE p.meal_type WHEN 'breakfast' THEN 1 WH
 export const listByDates = (groupId, from, to, db) =>
   query(`${ITEM_SELECT} WHERE i.group_id = $1 AND p.plan_date BETWEEN $2 AND $3 AND i.item_status <> 'cancelled' ${ORDER}`, [groupId, from, to], db);
 
-export const findItem = (groupId, id, db) => queryOne(`${ITEM_SELECT} WHERE i.group_id = $1 AND i.id = $2`, [groupId, id], db);
+export const findItem = (groupId, id, db, { lock = false } = {}) =>
+  queryOne(`${ITEM_SELECT} WHERE i.group_id = $1 AND i.id = $2${lock ? ' FOR UPDATE OF i' : ''}`, [groupId, id], db);
 
 /** Lấy (hoặc tạo) bữa (nhóm, ngày, sáng/trưa/tối). */
 export const upsertPlan = ({ groupId, date, mealType, createdBy }, db) =>
@@ -46,4 +47,6 @@ export const deleteItem = (id, db) => query('DELETE FROM meal_plan_items WHERE i
 export const itemReferencedByLogs = async (id, db) =>
   Boolean(await queryOne('SELECT 1 FROM inventory_logs WHERE meal_plan_item_id = $1 LIMIT 1', [id], db));
 
-export const cancelItem = (id, db) => query("UPDATE meal_plan_items SET item_status = 'cancelled' WHERE id = $1", [id], db);
+// CHECK của bảng: item_status = 'cooked' khi và chỉ khi cooked_at có giá trị.
+export const cancelItem = (id, db) => query("UPDATE meal_plan_items SET item_status = 'cancelled', cooked_at = NULL WHERE id = $1", [id], db);
+export const markCooked = (id, db) => query("UPDATE meal_plan_items SET item_status = 'cooked', cooked_at = now() WHERE id = $1", [id], db);

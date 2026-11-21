@@ -5,6 +5,7 @@ import { today } from '../repositories/fridge.repository.js';
 import { resolveFood, toBaseUnit } from './catalog.service.js';
 import { presentRecipe } from '../models/presenters.js';
 import { ApiError } from '../utils/response.js';
+import { getSetting } from './settings.service.js';
 
 // Nhóm 10 · Công thức + API mở rộng #54 (gợi ý món từ đồ trong tủ lạnh).
 // recipes.group_id NULL = công thức chung (seed), có giá trị = công thức của nhóm.
@@ -32,8 +33,22 @@ async function buildIngredients(group, { foodName, ingredients = [] }, db) {
   return rows;
 }
 
-export async function listRecipes(group, { foodId, q }) {
-  return withIngredients(await recipes.listRecipes(group.id, { foodId, q }));
+export async function listRecipes(user, group, { foodId, q, favorite }) {
+  return withIngredients(await recipes.listRecipes(group.id, { foodId, q, favorite, userId: user.id }));
+}
+
+// ----- Công thức yêu thích (đề bài: "lưu và quản lý các công thức nấu ăn yêu thích") -----
+
+export async function addFavorite(user, group, { recipeId }) {
+  if (!(await recipes.findRecipe(group.id, recipeId))) throw notFound();
+  await recipes.addFavorite(user.id, recipeId);
+  return (await withIngredients([await recipes.findRecipe(group.id, recipeId, undefined, user.id)]))[0];
+}
+
+export async function removeFavorite(user, group, { recipeId }) {
+  const removed = await recipes.removeFavorite(user.id, recipeId);
+  if (!removed) throw new ApiError('NOT_FOUND', { message: 'Công thức không có trong danh sách yêu thích' });
+  return { recipeId, isFavorite: false };
 }
 
 export async function createRecipe(user, group, input, file, req) {
@@ -89,8 +104,13 @@ export async function deleteRecipe(group, { recipeId }) {
  * Gợi ý món: xếp công thức theo tỉ lệ nguyên liệu bắt buộc đã có đủ trong tủ,
  * ưu tiên món dùng đồ sắp hết hạn (≤ 3 ngày).
  */
-export async function suggest(group, { limit }) {
-  const [all, stock, day] = await Promise.all([recipes.listRecipes(group.id, {}), recipes.stockByFood(group.id), today(group.timeZone)]);
+export async function suggest(user, group, { limit }) {
+  const [all, stock, day, max] = await Promise.all([
+    recipes.listRecipes(group.id, { userId: user.id }),
+    recipes.stockByFood(group.id),
+    today(group.timeZone),
+    limit ?? getSetting('suggest_limit'),
+  ]);
   const stockMap = new Map(stock.map((s) => [s.food_id, s]));
   const ingredients = await recipes.ingredientsOf(all.map((r) => r.id));
   const soon = new Date(`${day}T00:00:00Z`);
@@ -117,8 +137,12 @@ export async function suggest(group, { limit }) {
 
   return scored
     .filter((s) => s.matched.length > 0)
-    .sort((a, b) => b.ratio - a.ratio || b.expiring.length - a.expiring.length || a.missing.length - b.missing.length)
-    .slice(0, limit)
+    .sort(
+      (a, b) =>
+        b.ratio - a.ratio || b.expiring.length - a.expiring.length || a.missing.length - b.missing.length ||
+        Number(Boolean(b.r.is_favorite)) - Number(Boolean(a.r.is_favorite)),
+    )
+    .slice(0, max)
     .map((s) => ({
       recipe: presentRecipe(s.r, s.own),
       matchRatio: Math.round(s.ratio * 100) / 100,

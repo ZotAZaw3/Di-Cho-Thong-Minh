@@ -21,17 +21,25 @@ export async function editProfile(user, { name, username, language }, file, req)
 }
 
 /**
- * Rời nhóm đang ở. Trưởng nhóm rời đi thì thành viên vào sớm nhất lên làm trưởng nhóm.
+ * Rời nhóm đang ở. Trưởng nhóm rời đi thì thành viên vào sớm nhất lên làm trưởng nhóm; không còn ai thì
+ * nhóm được lưu trữ. Việc chưa xong của người rời đi chuyển cho trưởng nhóm.
  * @returns {Promise<void>}
  */
 export async function leaveCurrentGroup(userId, db) {
   const membership = await groups.findActiveMembership(userId, db);
   if (!membership) return;
   await groups.markLeft(membership.id, userId, db);
+  let leaderId = membership.role === 'leader' ? undefined : await groups.findLeaderId(membership.id, db);
   if (membership.role === 'leader') {
     const next = (await groups.listMembers(membership.id, db))[0];
-    if (next) await groups.setRole(membership.id, next.id, 'leader', db);
+    if (next) {
+      await groups.setRole(membership.id, next.id, 'leader', db);
+      leaderId = next.id;
+    } else {
+      await groups.archiveGroup(membership.id, db);
+    }
   }
+  if (leaderId) await groups.reassignOpenWork(membership.id, userId, leaderId, db);
 }
 
 export async function deleteAccount(user) {

@@ -1,22 +1,11 @@
 import { z } from 'zod';
-import { text, optText, id, quantity, bool, date, withAliases } from './common.js';
+import { text, optText, id, quantity, bool, date, withAliases, jsonArray } from './common.js';
 
 // Nhóm 10 + API mở rộng #54.
 const ingredient = withAliases(
   { unit: ['unitName'], optional: ['isOptional'] },
   { foodId: id.optional(), foodName: optText(160), quantity: quantity.optional(), unit: optText(60), optional: bool.optional(), note: optText(300) },
 ).refine((v) => v.foodId || v.foodName, { message: 'cần foodName', path: ['foodName'] });
-
-// form-data gửi mảng dưới dạng chuỗi JSON.
-const jsonArray = (schema) =>
-  z.preprocess((v) => {
-    if (typeof v !== 'string') return v;
-    try {
-      return JSON.parse(v);
-    } catch {
-      return v;
-    }
-  }, z.array(schema).max(50));
 
 const minutes = z.coerce.number().int().min(0).max(10_000);
 
@@ -50,7 +39,10 @@ export const updateRecipe = withAliases(
 );
 
 export const recipeRef = withAliases({ recipeId: ['id'] }, { recipeId: id });
-export const listQuery = z.object({ foodId: id.optional(), q: optText(100) });
-export const suggestQuery = z.object({ limit: z.coerce.number().int().min(1).max(50).default(10) });
+export const listQuery = withAliases(
+  { q: ['name', 'search', 'keyword'], favorite: ['favorites', 'isFavorite'] },
+  { foodId: id.optional(), q: optText(100), favorite: bool.optional() },
+);
+export const suggestQuery = z.object({ limit: z.coerce.number().int().min(1).max(50).optional() });
 export const reportQuery = z.object({ from: date.optional(), to: date.optional() });
 export { text };

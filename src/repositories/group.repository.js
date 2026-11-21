@@ -47,3 +47,24 @@ export const memberIds = async (groupId, db) =>
 
 export const findGroupById = (groupId, db) =>
   queryOne('SELECT id, name, time_zone AS "timeZone", created_at AS "createdAt" FROM family_groups WHERE id = $1', [groupId], db);
+
+export const archiveGroup = (groupId, db) => query('UPDATE family_groups SET archived_at = now() WHERE id = $1', [groupId], db);
+
+export const findLeaderId = async (groupId, db) =>
+  (await queryOne("SELECT user_id FROM group_members WHERE group_id = $1 AND left_at IS NULL AND group_role = 'leader'", [groupId], db))?.user_id;
+
+/** Việc chưa xong của người rời nhóm chuyển cho trưởng nhóm, để không còn mặt hàng "mồ côi". */
+export async function reassignOpenWork(groupId, fromUserId, toUserId, db) {
+  await query(
+    `UPDATE tasks t SET assigned_to = $3, updated_at = now()
+     FROM shopping_list_items i JOIN shopping_lists l ON l.id = i.shopping_list_id
+     WHERE t.shopping_list_item_id = i.id AND l.group_id = $1 AND t.assigned_to = $2 AND t.task_status IN ('todo', 'in_progress')`,
+    [groupId, fromUserId, toUserId],
+    db,
+  );
+  await query(
+    `UPDATE shopping_lists SET assigned_to = $3, updated_at = now() WHERE group_id = $1 AND assigned_to = $2 AND list_status = 'active'`,
+    [groupId, fromUserId, toUserId],
+    db,
+  );
+}

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth.js';
 import { adminOnly } from '../middlewares/adminOnly.js';
 import { validate } from '../middlewares/validate.js';
+import { uploadImage } from '../middlewares/upload.js';
 import * as s from '../models/catalog.schema.js';
 import * as u from '../models/user.schema.js';
 import * as c from '../controllers/admin.controller.js';
@@ -25,3 +26,11 @@ adminRouter.get('/admin/logs', admin, validate(s.logsQuery, 'query'), c.getLogs)
 // Mở rộng · API #53 · T08.1
 adminRouter.get('/admin/user', admin, validate(u.adminListUsers, 'query'), uc.adminListUsers);
 adminRouter.put('/admin/user', admin, validate(u.adminSetStatus), uc.adminSetStatus);
+
+// Danh mục thực phẩm chung (group_id NULL) và cấu hình hệ thống.
+adminRouter.get('/admin/food', admin, validate(s.adminFoodQuery, 'query'), c.listFoods);
+adminRouter.post('/admin/food', admin, uploadImage, validate(s.createFood), c.createFood);
+adminRouter.put('/admin/food', admin, uploadImage, validate(s.updateFood), c.updateFood);
+adminRouter.delete('/admin/food', admin, validate(s.deleteFood, 'input'), c.deleteFood);
+adminRouter.get('/admin/config', admin, c.getConfig);
+adminRouter.put('/admin/config', admin, c.updateConfig);

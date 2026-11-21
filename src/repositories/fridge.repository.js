@@ -1,4 +1,5 @@
 import { query, queryOne } from '../config/db.js';
+import { likeQ, nameMatches } from './search.js';
 
 const ITEM_SELECT = `
   SELECT i.*, f.name AS food_name, f.image_url, f.base_unit_id, c.name AS category_name, u.name AS unit_name
@@ -15,12 +16,12 @@ export const listItems = (groupId, { q, category, location, foodId } = {}, db) =
   query(
     `${ITEM_SELECT}
      WHERE i.group_id = $1 AND i.quantity_base > 0
-       AND ($2::text IS NULL OR f.name ILIKE '%' || $2 || '%')
+       AND ${nameMatches('f.name', 2)}
        AND ($3::text IS NULL OR lower(c.name) = lower($3))
        AND ($4::text IS NULL OR i.storage_location = $4)
        AND ($5::bigint IS NULL OR i.food_id = $5)
      ORDER BY i.expires_on NULLS LAST, f.name, i.id`,
-    [groupId, q ?? null, category ?? null, location ?? null, foodId ?? null],
+    [groupId, likeQ(q), category ?? null, location ?? null, foodId ?? null],
     db,
   );
 
@@ -89,3 +90,12 @@ export async function insertLog(log, db) {
 
 export const findLogByKey = (groupId, key, db) =>
   queryOne('SELECT * FROM inventory_logs WHERE group_id = $1 AND idempotency_key = $2', [groupId, key], db);
+
+/** Các món còn của một thực phẩm, hết hạn sớm nhất trước (dùng trước), khóa để trừ số lượng. */
+export const lockStock = (groupId, foodId, db) =>
+  query(
+    `SELECT id, quantity_base FROM fridge_items WHERE group_id = $1 AND food_id = $2 AND quantity_base > 0
+     ORDER BY expires_on NULLS LAST, id FOR UPDATE`,
+    [groupId, foodId],
+    db,
+  );

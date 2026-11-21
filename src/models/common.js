@@ -80,6 +80,17 @@ export function withAliases(aliases, shape) {
   }, z.object(shape));
 }
 
+/** Mảng; form-data gửi mảng dưới dạng chuỗi JSON. */
+export const jsonArray = (schema, max = 50) =>
+  z.preprocess((v) => {
+    if (typeof v !== 'string') return v;
+    try {
+      return JSON.parse(v);
+    } catch {
+      return v;
+    }
+  }, z.array(schema).max(max));
+
 export const pagination = {
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(200).default(50),

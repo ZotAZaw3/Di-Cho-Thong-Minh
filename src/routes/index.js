@@ -9,6 +9,7 @@ import { fridgeRouter } from './fridge.js';
 import { mealRouter } from './meal.js';
 import { recipeRouter } from './recipe.js';
 import { reportRouter } from './report.js';
+import { notificationRouter } from './notification.js';
 
 // Mỗi file = một nhóm API trong tài liệu; mỗi người chỉ sửa file nhóm mình phụ trách.
 export const apiRouter = Router();
@@ -25,3 +26,4 @@ apiRouter.use(fridgeRouter);
 apiRouter.use(mealRouter);
 apiRouter.use(recipeRouter);
 apiRouter.use(reportRouter);
+apiRouter.use(notificationRouter);

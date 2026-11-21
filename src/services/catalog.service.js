@@ -101,25 +101,69 @@ export async function toBaseUnit(food, quantity, unitName, db) {
   return { unitId: fu.unit_id, factor: fu.factor_to_base, quantityBase: quantity * fu.factor_to_base };
 }
 
-export async function getFoodCatalog(group) {
-  const [foods, categories, units] = await Promise.all([catalog.listFoods(group.id), catalog.listCategories(), catalog.listUnits()]);
+/** GET food/: danh mục thực phẩm của nhóm, lọc theo tên (không dấu) và category. */
+export async function getFoodCatalog(group, { q, category } = {}) {
+  const [foods, categories, units] = await Promise.all([
+    catalog.listFoods(group.id, { q, category }),
+    catalog.listCategories(),
+    catalog.listUnits(),
+  ]);
   return { foods: foods.map(presentFood), categories: categories.map(presentOption), units: units.map(presentOption) };
 }
 
-export async function createFood(user, group, { name, categoryName, unitName }, file, req) {
+/**
+ * Đơn vị phụ [{ unitName, factor }]: 1 unitName = factor đơn vị gốc (vd. 1 hộp = 10 quả).
+ * Bỏ qua dòng trùng đơn vị gốc.
+ */
+async function saveConversions(food, baseUnitId, conversions = [], db) {
+  for (const c of conversions) {
+    const unit = await catalog.findUnitByName(c.unitName, db);
+    if (!unit) throw notFound('đơn vị', c.unitName);
+    if (unit.id === baseUnitId) continue;
+    await catalog.upsertFoodUnit(food.id, unit.id, c.factor, db);
+  }
+}
+
+/** groupId null = thực phẩm trong danh mục chung (admin). */
+async function insertFoodIn(groupId, user, { name, categoryName, unitName, units }, file, req) {
   const category = await catalog.findCategoryByName(categoryName);
   if (!category) throw notFound('category', categoryName);
   const unit = await catalog.findUnitByName(unitName);
   if (!unit) throw notFound('đơn vị', unitName);
-  if (await catalog.findFoodByName(group.id, name)) throw new ApiError('CONFLICT', { message: `Thực phẩm "${name}" đã tồn tại` });
+  const existing = await catalog.findFoodByName(groupId, name);
+  // Nhóm được tạo món riêng trùng tên món chung? Không: món chung đã dùng được, tạo thêm chỉ gây nhầm.
+  if (existing) throw new ApiError('CONFLICT', { message: `Thực phẩm "${name}" đã tồn tại${existing.group_id === null && groupId ? ' trong danh mục chung' : ''}` });
   const imageUrl = file ? await storage().upload('foods', file, req) : null;
-  const food = await withTransaction(async (db) => {
-    const row = await catalog.insertFood({ groupId: group.id, name, categoryId: category.id, unitId: unit.id, imageUrl, createdBy: user.id }, db);
+  return withTransaction(async (db) => {
+    const row = await catalog.insertFood({ groupId, name, categoryId: category.id, unitId: unit.id, imageUrl, createdBy: user.id }, db);
     await catalog.ensureFoodUnit(row.id, unit.id, 1, db);
-    return catalog.findFoodById(group.id, row.id, db);
+    await saveConversions(row, unit.id, units, db);
+    return presentFood(await catalog.findFoodById(groupId, row.id, db));
   });
-  return presentFood(food);
 }
+
+async function updateFoodIn(groupId, food, { newName, newCategory, newUnit, units }, file, req) {
+  const category = newCategory ? await catalog.findCategoryByName(newCategory) : null;
+  if (newCategory && !category) throw notFound('category', newCategory);
+  const unit = newUnit ? await catalog.findUnitByName(newUnit) : null;
+  if (newUnit && !unit) throw notFound('đơn vị', newUnit);
+  if (unit && unit.id !== food.base_unit_id && (await catalog.foodInStock(food.id))) {
+    throw new ApiError('IN_USE', { message: 'Không đổi được đơn vị khi thực phẩm còn trong tủ lạnh hoặc danh sách mua' });
+  }
+  if (newName && newName.toLowerCase() !== food.name.toLowerCase()) {
+    const dup = await catalog.findFoodByName(groupId, newName);
+    if (dup && dup.id !== food.id) throw new ApiError('CONFLICT', { message: `Thực phẩm "${newName}" đã tồn tại` });
+  }
+  const imageUrl = file ? await storage().upload('foods', file, req) : undefined;
+  return withTransaction(async (db) => {
+    await catalog.updateFood(food.id, { name: newName, categoryId: category?.id, unitId: unit?.id, imageUrl }, db);
+    if (unit) await catalog.ensureFoodUnit(food.id, unit.id, 1, db);
+    await saveConversions(food, unit?.id ?? food.base_unit_id, units, db);
+    return presentFood(await catalog.findFoodById(groupId, food.id, db));
+  });
+}
+
+export const createFood = (user, group, input, file, req) => insertFoodIn(group.id, user, input, file, req);
 
 async function findOwnFood(group, name) {
   const food = await catalog.findFoodByName(group.id, name);
@@ -130,28 +174,32 @@ async function findOwnFood(group, name) {
   return food;
 }
 
-export async function updateFood(group, { name, newName, newCategory, newUnit }, file, req) {
-  const food = await findOwnFood(group, name);
-  const category = newCategory ? await catalog.findCategoryByName(newCategory) : null;
-  if (newCategory && !category) throw notFound('category', newCategory);
-  const unit = newUnit ? await catalog.findUnitByName(newUnit) : null;
-  if (newUnit && !unit) throw notFound('đơn vị', newUnit);
-  if (unit && unit.id !== food.base_unit_id && (await catalog.foodInStock(food.id))) {
-    throw new ApiError('IN_USE', { message: 'Không đổi được đơn vị khi thực phẩm còn trong tủ lạnh hoặc danh sách mua' });
-  }
-  if (newName && newName.toLowerCase() !== food.name.toLowerCase() && (await catalog.findFoodByName(group.id, newName))) {
-    throw new ApiError('CONFLICT', { message: `Thực phẩm "${newName}" đã tồn tại` });
-  }
-  const imageUrl = file ? await storage().upload('foods', file, req) : undefined;
-  return withTransaction(async (db) => {
-    await catalog.updateFood(food.id, { name: newName, categoryId: category?.id, unitId: unit?.id, imageUrl }, db);
-    if (unit) await catalog.ensureFoodUnit(food.id, unit.id, 1, db);
-    return presentFood(await catalog.findFoodById(group.id, food.id, db));
-  });
+export async function updateFood(group, input, file, req) {
+  return updateFoodIn(group.id, await findOwnFood(group, input.name), input, file, req);
 }
 
 export async function deleteFood(group, { name }) {
   const food = await findOwnFood(group, name);
+  await catalog.deactivateFood(food.id);
+  return null;
+}
+
+// ----- Danh mục thực phẩm chung (admin) -----
+
+async function findGlobalFood(name) {
+  const food = await catalog.findFoodByName(null, name);
+  if (!food) throw notFound('thực phẩm trong danh mục chung', name);
+  return food;
+}
+
+/** scope=all: xem cả thực phẩm riêng của các nhóm (để kiểm duyệt). */
+export async function adminListFoods({ q, category, scope }) {
+  return (await catalog.listFoods(null, { q, category, scope })).map(presentFood);
+}
+export const adminCreateFood = (admin, input, file, req) => insertFoodIn(null, admin, input, file, req);
+export const adminUpdateFood = async (input, file, req) => updateFoodIn(null, await findGlobalFood(input.name), input, file, req);
+export async function adminDeleteFood({ name }) {
+  const food = await findGlobalFood(name);
   await catalog.deactivateFood(food.id);
   return null;
 }
