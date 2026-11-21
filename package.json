@@ -1,6 +1,6 @@
 {
   "name": "di-cho-thong-minh-backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "API server cho app Đi chợ tiện lợi (IT4788, nhóm 4)",
   "type": "module",
@@ -13,13 +13,22 @@
     "start": "node src/server.js",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.js",
+    "db:seed": "node --env-file-if-exists=.env scripts/seed.js",
+    "db:setup": "npm run db:migrate && npm run db:seed -- --demo"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
     "cors": "^2.8.6",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.2",
+    "firebase-admin": "^14.5.1",
     "helmet": "^8.3.0",
+    "jose": "^6.2.18",
+    "multer": "^2.5.0",
+    "node-cron": "^4.6.0",
+    "pg": "^8.23.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {

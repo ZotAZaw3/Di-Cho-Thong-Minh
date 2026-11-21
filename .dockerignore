@@ -6,3 +6,6 @@ tests
 .env
 .env.*
 *.md
+app
+uploads
+docs

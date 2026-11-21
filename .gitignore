@@ -12,6 +12,9 @@ dist/
 firebase-adminsdk*.json
 .DBENV
 
+# Ảnh upload khi STORAGE_DRIVER=local
+uploads/
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json

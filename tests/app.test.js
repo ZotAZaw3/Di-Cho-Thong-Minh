@@ -8,13 +8,20 @@ describe('Khung server', () => {
   it('health check trả đúng format', async () => {
     const res = await request(app).get('/it4788/health');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ code: 'OK', message: 'Thành công', data: { status: 'ok' } });
+    expect(res.body).toEqual({ code: '00000', message: 'Thành công', data: { status: 'ok' } });
   });
 
-  it('API chưa làm trả 501 kèm tên API', async () => {
-    const res = await request(app).post('/it4788/user/login/');
-    expect(res.status).toBe(501);
-    expect(res.body).toMatchObject({ code: 'NOT_IMPLEMENTED', data: { api: 'Login' } });
+  it('thiếu trường bắt buộc trả 00279 kèm danh sách lỗi', async () => {
+    const res = await request(app).post('/it4788/user/login/').send({});
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe('00279');
+    expect(res.body.data.errors.map((e) => e.field)).toEqual(expect.arrayContaining(['email', 'password']));
+  });
+
+  it('API cần đăng nhập mà không có token trả 00281', async () => {
+    const res = await request(app).get('/it4788/fridge/');
+    expect(res.status).toBe(401);
+    expect(res.body.code).toBe('00281');
   });
 
   it('route không tồn tại trả ROUTE_NOT_FOUND', async () => {
@@ -35,7 +42,7 @@ describe('Khung server', () => {
       .set('Content-Type', 'application/json')
       .send('{"email":');
     expect(res.status).toBe(400);
-    expect(res.body.code).toBe('BAD_REQUEST');
+    expect(res.body.code).toBe('00279');
   });
 });
 

@@ -22,15 +22,18 @@ describe('Danh sách API', () => {
 });
 
 describe('Các path dễ nhầm trỏ đúng handler', () => {
+  // Không có token: mọi route cần đăng nhập trả 00281; route công khai kiểm tra body trước (00279).
   it.each([
-    ['GET', '/user/group/', 'Get group members'],
-    ['GET', '/user/', 'Get user'],
-    ['GET', '/fridge/Thịt bò/', 'Specific item'],
-    ['GET', '/recipe/suggest/', 'Gợi ý món từ tủ lạnh'],
-    ['GET', '/recipe/?foodId=1', 'Get recipes by food id'],
-    ['PUT', '/shopping/task/done/', 'Đánh dấu task đã mua'],
-  ])('%s %s → %s', async (method, path, api) => {
-    const res = await request(app)[method.toLowerCase()](encodeURI(PREFIX + path));
-    expect(res.body.data).toEqual({ api });
+    ['GET', '/user/group/', '00281'],
+    ['GET', '/user/', '00281'],
+    ['GET', '/fridge/Thịt bò/', '00281'],
+    ['GET', '/recipe/suggest/', '00281'],
+    ['PUT', '/shopping/task/done/', '00281'],
+    ['POST', '/user/', '00279'],
+    ['POST', '/user/login/', '00279'],
+    ['POST', '/user/refresh-token/', '00279'],
+  ])('%s %s → %s', async (method, path, code) => {
+    const res = await request(app)[method.toLowerCase()](encodeURI(PREFIX + path)).send({});
+    expect(res.body.code).toBe(code);
   });
 });
