@@ -1,0 +1,5510 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Đi chợ tiện lợi API (IT4788, nhóm 4)",
+    "version": "1.0.0",
+    "description": "Mọi API trả về `{ code, message, data }`. API #1–49 theo tài liệu môn học, #50–55 mở rộng (sheet), #56–66 bổ sung theo đề bài.\nBody nhận tên trường theo tài liệu; tên app nhánh fe-tien dùng cũng được nhận (xem docs/api.md).\n\n| code | HTTP | Tên | Message | Nguồn |\n| --- | --- | --- | --- | --- |\n| `00000` | 200 | OK | Thành công | tmp |\n| `00000` | 201 | CREATED | Tạo thành công | tmp |\n| `00287` | 201 | TASKS_CREATED | Thêm nhiệm vụ thành công | app |\n| `00279` | 400 | BAD_REQUEST | Dữ liệu gửi lên không hợp lệ | app |\n| `00281` | 401 | UNAUTHORIZED | Phiên đăng nhập không hợp lệ hoặc đã hết hạn | app |\n| `00284` | 403 | FORBIDDEN | Bạn không có quyền thực hiện thao tác này | app |\n| `00019` | 403 | ADMIN_ONLY | Chỉ quản trị viên được dùng chức năng này | doc |\n| `00044` | 403 | EMAIL_NOT_CONFIRMED | Email chưa được xác minh | doc |\n| `00024` | 429 | RATE_LIMITED | Gửi yêu cầu quá nhiều, vui lòng thử lại sau | doc |\n| `INVALID_CREDENTIALS` | 401 | INVALID_CREDENTIALS | Email hoặc mật khẩu không đúng | tmp |\n| `ACCOUNT_BLOCKED` | 403 | ACCOUNT_BLOCKED | Tài khoản đã bị khóa | tmp |\n| `EMAIL_EXISTS` | 409 | EMAIL_EXISTS | Email đã được đăng ký | tmp |\n| `USERNAME_EXISTS` | 409 | USERNAME_EXISTS | Tên đăng nhập đã tồn tại | tmp |\n| `INVALID_CODE` | 400 | INVALID_CODE | Mã xác minh không đúng hoặc đã hết hạn | tmp |\n| `WRONG_PASSWORD` | 400 | WRONG_PASSWORD | Mật khẩu cũ không đúng | tmp |\n| `NO_GROUP` | 403 | NO_GROUP | Bạn chưa thuộc nhóm gia đình nào | tmp |\n| `ALREADY_IN_GROUP` | 409 | ALREADY_IN_GROUP | Người dùng đã ở trong một nhóm | tmp |\n| `NOT_FOUND` | 404 | NOT_FOUND | Không tìm thấy dữ liệu | tmp |\n| `CONFLICT` | 409 | CONFLICT | Dữ liệu đã tồn tại | tmp |\n| `IN_USE` | 409 | IN_USE | Dữ liệu đang được sử dụng, không thể xóa | tmp |\n| `ROUTE_NOT_FOUND` | 404 | ROUTE_NOT_FOUND | Không tìm thấy API | tmp |\n| `INTERNAL_ERROR` | 500 | INTERNAL_ERROR | Lỗi máy chủ | tmp |"
+  },
+  "servers": [
+    {
+      "url": "/it4788",
+      "description": "Server hiện tại"
+    }
+  ],
+  "tags": [
+    {
+      "name": "0. Hệ thống"
+    },
+    {
+      "name": "1. Xác thực"
+    },
+    {
+      "name": "2. Tài khoản"
+    },
+    {
+      "name": "3. Nhóm gia đình"
+    },
+    {
+      "name": "4, 5. Admin"
+    },
+    {
+      "name": "6. Thực phẩm"
+    },
+    {
+      "name": "7. Tủ lạnh"
+    },
+    {
+      "name": "8. Mua sắm"
+    },
+    {
+      "name": "9. Bữa ăn"
+    },
+    {
+      "name": "10. Công thức"
+    },
+    {
+      "name": "11. Thống kê"
+    },
+    {
+      "name": "12. Thông báo"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/health/": {
+      "get": {
+        "tags": [
+          "0. Hệ thống"
+        ],
+        "summary": "#0 Kiểm tra server",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/group/": {
+      "post": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#9 Tạo nhóm (người tạo là trưởng nhóm)",
+        "operationId": "postUserGroup",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                }
+              },
+              "example": {
+                "name": "Gia đình tôi"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#11 Xóa thành viên",
+        "operationId": "deleteUserGroup",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 254
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#12 Xem nhóm và thành viên",
+        "operationId": "getUserGroup",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+      }
+    },
+    "/user/group/add/": {
+      "post": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#10 Thêm thành viên",
+        "operationId": "postUserGroupAdd",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 254
+                  }
+                },
+                "required": [
+                  "username"
+                ]
+              },
+              "example": {
+                "username": "minh@dicho.local"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/group/leave/": {
+      "post": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#61 Rời nhóm",
+        "operationId": "postUserGroupLeave",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+      }
+    },
+    "/user/group/leader/": {
+      "put": {
+        "tags": [
+          "3. Nhóm gia đình"
+        ],
+        "summary": "#62 Chuyển quyền trưởng nhóm",
+        "operationId": "putUserGroupLeader",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 254
+                  }
+                },
+                "required": [
+                  "username"
+                ]
+              },
+              "example": {
+                "username": "minh@dicho.local"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#1 Đăng nhập",
+        "operationId": "postUserLogin",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "email": "demo@dicho.local",
+                "password": "123456"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#2 Đăng ký (gửi mã xác minh email)",
+        "operationId": "postUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 20
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "username": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "language": {
+                    "type": "string",
+                    "maxLength": 10
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              },
+              "example": {
+                "email": "ban@example.com",
+                "password": "123456",
+                "name": "Nguyễn Văn A",
+                "username": "nguyenvana"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "2. Tài khoản"
+        ],
+        "summary": "#8 Sửa thông tin cá nhân (form-data, ảnh ở trường image)",
+        "operationId": "putUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "username": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "language": {
+                    "type": "string",
+                    "maxLength": 10
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "username": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "language": {
+                    "type": "string",
+                    "maxLength": 10
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "2. Tài khoản"
+        ],
+        "summary": "#13 Thông tin người dùng hiện tại",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập."
+      },
+      "delete": {
+        "tags": [
+          "2. Tài khoản"
+        ],
+        "summary": "#14 Xóa tài khoản",
+        "operationId": "deleteUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập."
+      }
+    },
+    "/user/logout/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#3 Đăng xuất",
+        "operationId": "postUserLogout",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/user/refresh-token/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#4 Làm mới access token",
+        "operationId": "postUserRefreshToken",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "refreshToken"
+                ]
+              },
+              "example": {
+                "refreshToken": "{{refreshToken}}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/send-verification-code/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#5 Gửi lại mã xác minh",
+        "operationId": "postUserSendVerificationCode",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              },
+              "example": {
+                "email": "ban@example.com"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/verify-email/": {
+      "post": {
+        "tags": [
+          "1. Xác thực"
+        ],
+        "summary": "#6 Xác minh email bằng mã 6 số",
+        "operationId": "postUserVerifyEmail",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^\\d{6}$"
+                  },
+                  "token": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              },
+              "example": {
+                "email": "ban@example.com",
+                "code": "123456"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/change-password/": {
+      "post": {
+        "tags": [
+          "2. Tài khoản"
+        ],
+        "summary": "#7 Đổi mật khẩu",
+        "operationId": "postUserChangePassword",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 20
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ]
+              },
+              "example": {
+                "oldPassword": "123456",
+                "newPassword": "1234567"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/device/": {
+      "put": {
+        "tags": [
+          "2. Tài khoản"
+        ],
+        "summary": "#50 Đăng ký FCM token của thiết bị",
+        "operationId": "putUserDevice",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "android",
+                      "ios",
+                      "web"
+                    ]
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              },
+              "example": {
+                "token": "fcm-token-cua-may",
+                "platform": "android"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/category/": {
+      "post": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#15 Tạo category",
+        "operationId": "postAdminCategory",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "code": {
+                    "type": "string",
+                    "maxLength": 20
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "example": {
+                "name": "Đồ đông lạnh",
+                "description": "Thực phẩm cấp đông"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#16 Danh sách category",
+        "operationId": "getAdminCategory",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019)."
+      },
+      "put": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#17 Đổi tên category",
+        "operationId": "putAdminCategory",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "newName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "oldName",
+                  "newName"
+                ]
+              },
+              "example": {
+                "oldName": "Đồ đông lạnh",
+                "newName": "Đông lạnh"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#18 Xóa category",
+        "operationId": "deleteAdminCategory",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/admin/unit/": {
+      "post": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#19 Tạo đơn vị",
+        "operationId": "postAdminUnit",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "code": {
+                    "type": "string",
+                    "maxLength": 20
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "example": {
+                "name": "thùng"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#20 Danh sách đơn vị",
+        "operationId": "getAdminUnit",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019)."
+      },
+      "put": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#21 Đổi tên đơn vị",
+        "operationId": "putAdminUnit",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "newName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "oldName",
+                  "newName"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#22 Xóa đơn vị",
+        "operationId": "deleteAdminUnit",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/admin/logs/": {
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#23 Xem log hệ thống",
+        "operationId": "getAdminLogs",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 8
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ]
+      }
+    },
+    "/admin/user/": {
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#53 Danh sách tài khoản",
+        "operationId": "getAdminUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "blocked"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#53 Khóa / mở khóa tài khoản",
+        "operationId": "putAdminUser",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "blocked"
+                    ]
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "example": {
+                "email": "minh@dicho.local",
+                "status": "blocked"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/food/": {
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#65 Danh mục thực phẩm chung",
+        "operationId": "getAdminFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "global",
+              "type": "string",
+              "enum": [
+                "global",
+                "all"
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#65 Thêm thực phẩm chung",
+        "operationId": "postAdminFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unitName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "categoryName",
+                  "unitName"
+                ]
+              },
+              "example": {
+                "name": "Nấm hương",
+                "categoryName": "Rau củ",
+                "unitName": "kg",
+                "units": [
+                  {
+                    "unitName": "g",
+                    "factor": 0.001
+                  }
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unitName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name",
+                  "categoryName",
+                  "unitName"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#65 Sửa thực phẩm chung",
+        "operationId": "putAdminFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newCategory": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newCategory": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#65 Xóa thực phẩm chung",
+        "operationId": "deleteAdminFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/admin/config/": {
+      "get": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#66 Xem cấu hình hệ thống",
+        "operationId": "getAdminConfig",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019)."
+      },
+      "put": {
+        "tags": [
+          "4, 5. Admin"
+        ],
+        "summary": "#66 Sửa cấu hình: { expiryDays: 5 } hoặc { key, value }",
+        "operationId": "putAdminConfig",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Chỉ admin (00019)."
+      }
+    },
+    "/shopping/": {
+      "post": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#35 Tạo danh sách mua sắm",
+        "operationId": "postShopping",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "assignToUsername": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 254
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "date": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "example": {
+                "name": "Đi chợ cuối tuần",
+                "assignToUsername": "minh@dicho.local",
+                "date": "2026-12-05"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#36 Sửa danh sách (trưởng nhóm / người tạo)",
+        "operationId": "putShopping",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "listId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newAssignToUsername": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 254
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "newDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "newNote": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "archived"
+                    ]
+                  }
+                },
+                "required": [
+                  "listId"
+                ]
+              },
+              "example": {
+                "listId": 1,
+                "newName": "Đi chợ thứ bảy",
+                "status": "active"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#37 Xóa danh sách (trưởng nhóm / người tạo)",
+        "operationId": "deleteShopping",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "listId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#51 Các danh sách mua sắm kèm mặt hàng",
+        "operationId": "getShopping",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "mine",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/shopping/copy/": {
+      "post": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#59 Sao chép danh sách cũ để dùng lại",
+        "operationId": "postShoppingCopy",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "listId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "date": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "assignToUsername": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 254
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "listId"
+                ]
+              },
+              "example": {
+                "listId": 1,
+                "date": "2026-12-12"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shopping/task/": {
+      "post": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#38 Thêm mặt hàng (mã 00287; trùng món thì không thêm món nào)",
+        "operationId": "postShoppingTask",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "listId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "tasks": {
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "foodId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "foodName": {
+                          "type": "string",
+                          "maxLength": 160
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        "unit": {
+                          "type": "string",
+                          "maxLength": 60
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "assignToUsername": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "maxLength": 254
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "quantity"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "listId",
+                  "tasks"
+                ]
+              },
+              "example": {
+                "listId": 1,
+                "tasks": [
+                  {
+                    "foodName": "Cà chua",
+                    "quantity": 0.5,
+                    "unit": "kg"
+                  },
+                  {
+                    "foodName": "Trứng gà",
+                    "quantity": 1,
+                    "unit": "hộp"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#39 Danh sách mặt hàng",
+        "operationId": "getShoppingTask",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "listId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "mine",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done",
+                "cancelled"
+              ]
+            }
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#40 Xóa mặt hàng",
+        "operationId": "deleteShoppingTask",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#41 Sửa mặt hàng",
+        "operationId": "putShoppingTask",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "taskId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newFoodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newQuantity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "newAssignToUsername": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 254
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "newNote": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "isDone": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "taskId"
+                ]
+              },
+              "example": {
+                "taskId": 1,
+                "newQuantity": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shopping/task/done/": {
+      "put": {
+        "tags": [
+          "8. Mua sắm"
+        ],
+        "summary": "#52 Đánh dấu đã mua → cộng vào tủ lạnh (done=false để hoàn tác)",
+        "operationId": "putShoppingTaskDone",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "taskId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "done": {
+                    "type": "boolean"
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "storageLocation": {
+                    "type": "string",
+                    "enum": [
+                      "fridge",
+                      "freezer",
+                      "pantry"
+                    ]
+                  },
+                  "totalCost": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "taskId"
+                ]
+              },
+              "example": {
+                "taskId": 1,
+                "done": true,
+                "expiryDate": "2026-12-10",
+                "storageLocation": "Tủ lạnh",
+                "totalCost": 35000
+              }
+            }
+          }
+        }
+      }
+    },
+    "/food/": {
+      "post": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#24 Tạo thực phẩm riêng của nhóm",
+        "operationId": "postFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unitName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "categoryName",
+                  "unitName"
+                ]
+              },
+              "example": {
+                "name": "Bánh bao",
+                "foodCategoryName": "Khác",
+                "unitName": "cái",
+                "units": [
+                  {
+                    "unitName": "gói",
+                    "factor": 6
+                  }
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "unitName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name",
+                  "categoryName",
+                  "unitName"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#25 Sửa thực phẩm của nhóm",
+        "operationId": "putFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newCategory": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "example": {
+                "name": "Bánh bao",
+                "newName": "Bánh bao chay"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newCategory": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "units": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "unitName": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "factor": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "unitName",
+                        "factor"
+                      ]
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#26 Xóa thực phẩm của nhóm",
+        "operationId": "deleteFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#27 Danh mục thực phẩm (tìm không dấu, lọc category)",
+        "operationId": "getFood",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/food/unit/": {
+      "get": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#28 Danh sách đơn vị",
+        "operationId": "getFoodUnit",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập."
+      }
+    },
+    "/food/category/": {
+      "get": {
+        "tags": [
+          "6. Thực phẩm"
+        ],
+        "summary": "#29 Danh sách category",
+        "operationId": "getFoodCategory",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập."
+      }
+    },
+    "/fridge/": {
+      "post": {
+        "tags": [
+          "7. Tủ lạnh"
+        ],
+        "summary": "#30 Thêm đồ vào tủ (header Idempotency-Key chống thêm trùng)",
+        "operationId": "postFridge",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "foodId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "foodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  },
+                  "unit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "useWithin": {
+                    "type": "integer",
+                    "minimum": -365,
+                    "maximum": 3650
+                  },
+                  "expiryDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "storageLocation": {
+                    "type": "string",
+                    "enum": [
+                      "fridge",
+                      "freezer",
+                      "pantry"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 160
+                  }
+                },
+                "required": [
+                  "quantity"
+                ]
+              },
+              "example": {
+                "foodName": "Trứng gà",
+                "quantity": 1,
+                "unit": "hộp",
+                "useWithin": 7,
+                "storageLocation": "Tủ lạnh"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "7. Tủ lạnh"
+        ],
+        "summary": "#31 Sửa đồ trong tủ",
+        "operationId": "putFridge",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newQuantity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  },
+                  "newUnit": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "newUseWithin": {
+                    "type": "integer",
+                    "minimum": -365,
+                    "maximum": 3650
+                  },
+                  "newExpiryDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "newNote": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newStorageLocation": {
+                    "type": "string",
+                    "enum": [
+                      "fridge",
+                      "freezer",
+                      "pantry"
+                    ]
+                  },
+                  "newFoodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  }
+                },
+                "required": [
+                  "itemId"
+                ]
+              },
+              "example": {
+                "itemId": 1,
+                "newQuantity": 5,
+                "newUseWithin": 3
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "7. Tủ lạnh"
+        ],
+        "summary": "#32 Bỏ đồ khỏi tủ",
+        "operationId": "deleteFridge",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "foodName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "7. Tủ lạnh"
+        ],
+        "summary": "#33 Danh sách đồ trong tủ, hạn gần nhất trước",
+        "operationId": "getFridge",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "fridge",
+                "freezer",
+                "pantry"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/fridge/{foodName}/": {
+      "get": {
+        "tags": [
+          "7. Tủ lạnh"
+        ],
+        "summary": "#34 Đồ trong tủ theo tên thực phẩm",
+        "operationId": "getFridge/FoodName",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "foodName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/meal/": {
+      "post": {
+        "tags": [
+          "9. Bữa ăn"
+        ],
+        "summary": "#42 Thêm món vào bữa",
+        "operationId": "postMeal",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "mealType": {
+                    "type": "string",
+                    "enum": [
+                      "breakfast",
+                      "lunch",
+                      "dinner"
+                    ]
+                  },
+                  "mealName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "foodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "recipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "servings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "example": {
+                "recipeId": 1,
+                "timestamp": "2026-12-05",
+                "name": "tối",
+                "servings": 4
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "9. Bữa ăn"
+        ],
+        "summary": "#43 Xóa món khỏi bữa",
+        "operationId": "deleteMeal",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "9. Bữa ăn"
+        ],
+        "summary": "#44 Sửa món (không có planId thì tạo mới)",
+        "operationId": "putMeal",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newFoodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newRecipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newMealName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newMealType": {
+                    "type": "string",
+                    "enum": [
+                      "breakfast",
+                      "lunch",
+                      "dinner"
+                    ]
+                  },
+                  "newDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "newServings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "newNote": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "date": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "mealType": {
+                    "type": "string",
+                    "enum": [
+                      "breakfast",
+                      "lunch",
+                      "dinner"
+                    ]
+                  },
+                  "mealName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "foodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "recipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              "example": {
+                "planId": 1,
+                "newName": "trưa"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "9. Bữa ăn"
+        ],
+        "summary": "#45 Xem theo ngày hoặc tuần (from/to, tối đa 62 ngày)",
+        "operationId": "getMeal",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ]
+      }
+    },
+    "/meal/cook/": {
+      "post": {
+        "tags": [
+          "9. Bữa ăn"
+        ],
+        "summary": "#60 Nấu xong: trừ nguyên liệu khỏi tủ lạnh",
+        "operationId": "postMealCook",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "force": {
+                    "type": "boolean"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  },
+                  "unit": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                },
+                "required": [
+                  "planId"
+                ]
+              },
+              "example": {
+                "planId": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipe/suggest/": {
+      "get": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#54 Gợi ý món từ đồ trong tủ",
+        "operationId": "getRecipeSuggest",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ]
+      }
+    },
+    "/recipe/favorite/": {
+      "post": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#56 Thêm công thức yêu thích",
+        "operationId": "postRecipeFavorite",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "recipeId"
+                ]
+              },
+              "example": {
+                "recipeId": 1
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#57 Bỏ công thức yêu thích",
+        "operationId": "deleteRecipeFavorite",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "recipeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#58 Công thức yêu thích của tôi",
+        "operationId": "getRecipeFavorite",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "foodId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "favorite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/recipe/": {
+      "post": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#46 Tạo công thức",
+        "operationId": "postRecipe",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "foodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "htmlContent": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100000
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "servings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "prepMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "cookMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "ingredients": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "foodId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "foodName": {
+                          "type": "string",
+                          "maxLength": 160
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        "unit": {
+                          "type": "string",
+                          "maxLength": 60
+                        },
+                        "optional": {
+                          "type": "boolean"
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "htmlContent"
+                ]
+              },
+              "example": {
+                "name": "Trứng hấp",
+                "htmlContent": "<ol><li>Đánh trứng</li><li>Hấp 10 phút</li></ol>",
+                "servings": 2,
+                "ingredients": [
+                  {
+                    "foodName": "Trứng gà",
+                    "quantity": 3,
+                    "unit": "quả"
+                  }
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "foodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "htmlContent": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100000
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "servings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "prepMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "cookMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "ingredients": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "foodId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "foodName": {
+                          "type": "string",
+                          "maxLength": 160
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        "unit": {
+                          "type": "string",
+                          "maxLength": 60
+                        },
+                        "optional": {
+                          "type": "boolean"
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      }
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name",
+                  "htmlContent"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#47 Sửa công thức",
+        "operationId": "putRecipe",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newHtmlContent": {
+                    "type": "string",
+                    "maxLength": 100000
+                  },
+                  "newDescription": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "newFoodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newServings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "newPrepMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "newCookMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "newIngredients": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "foodId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "foodName": {
+                          "type": "string",
+                          "maxLength": 160
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        "unit": {
+                          "type": "string",
+                          "maxLength": 60
+                        },
+                        "optional": {
+                          "type": "boolean"
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "recipeId"
+                ]
+              },
+              "example": {
+                "recipeId": 1,
+                "newName": "Trứng hấp thịt"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipeId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "newName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newHtmlContent": {
+                    "type": "string",
+                    "maxLength": 100000
+                  },
+                  "newDescription": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "newFoodName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "newServings": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "newPrepMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "newCookMinutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "newIngredients": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "foodId": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "foodName": {
+                          "type": "string",
+                          "maxLength": 160
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        "unit": {
+                          "type": "string",
+                          "maxLength": 60
+                        },
+                        "optional": {
+                          "type": "boolean"
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      }
+                    }
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "recipeId"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#48 Xóa công thức",
+        "operationId": "deleteRecipe",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "parameters": [
+          {
+            "name": "recipeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "10. Công thức"
+        ],
+        "summary": "#49 Danh sách công thức (lọc foodId, q, favorite)",
+        "operationId": "getRecipe",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "foodId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "favorite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/report/": {
+      "get": {
+        "tags": [
+          "11. Thống kê"
+        ],
+        "summary": "#55 Thống kê mua sắm và tiêu thụ",
+        "operationId": "getReport",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ]
+      }
+    },
+    "/notification/": {
+      "get": {
+        "tags": [
+          "12. Thông báo"
+        ],
+        "summary": "#63 Hộp thư thông báo nhắc hết hạn",
+        "operationId": "getNotification",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "parameters": [
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      }
+    },
+    "/notification/read/": {
+      "put": {
+        "tags": [
+          "12. Thông báo"
+        ],
+        "summary": "#64 Đánh dấu đã đọc (bỏ trống ids = tất cả)",
+        "operationId": "putNotificationRead",
+        "responses": {
+          "200": {
+            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "example": {
+                "ids": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

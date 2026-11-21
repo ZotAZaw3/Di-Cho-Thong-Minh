@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "db:migrate": "node --env-file-if-exists=.env scripts/migrate.js",
     "db:seed": "node --env-file-if-exists=.env scripts/seed.js",
-    "db:setup": "npm run db:migrate && npm run db:seed -- --demo"
+    "db:setup": "npm run db:migrate && npm run db:seed -- --demo",
+    "docs:export": "node scripts/export-api-docs.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",
@@ -29,6 +30,7 @@
     "multer": "^2.5.0",
     "node-cron": "^4.6.0",
     "pg": "^8.23.1",
+    "swagger-ui-dist": "5.17.14",
     "zod": "^4.6.7"
   },
   "devDependencies": {

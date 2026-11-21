@@ -3,6 +3,11 @@
 API server cho app "Đi chợ tiện lợi" (IT4788, nhóm 4): Node.js 22 + Express 5, PostgreSQL (Supabase), Supabase Auth, FCM.
 Mọi API nằm dưới `/it4788` và trả về `{ code, message, data }`. Danh sách API, body và mã response: [docs/api.md](docs/api.md).
 
+Tài liệu tương tác (Swagger UI, gọi thử được): chạy server rồi mở `http://localhost:3000/it4788/docs`.
+Postman: import [docs/postman_collection.json](docs/postman_collection.json) (biến `baseUrl`; chạy "#1 Đăng nhập" trước,
+token tự lưu) hoặc import thẳng `http://localhost:3000/it4788/openapi.json`. Hai file trong `docs/` sinh từ code bằng
+`npm run docs:export` (thêm URL server thật làm tham số khi deploy), nên luôn khớp với route và schema.
+
 Thư mục [`app/`](app/) là app Flutter lấy từ nhánh `fe-tien` trên GitLab, đã trỏ sẵn về backend này.
 
 ## Chạy local (không cần Supabase)
@@ -30,6 +35,7 @@ Từ emulator Android gọi `http://10.0.2.2:3000/it4788/`.
 | `npm run db:seed` | Seed danh mục chung (`-- --demo` thêm tài khoản demo) |
 | `npm test` | Test (vitest + supertest). Có `TEST_DATABASE_URL` thì chạy cả test tích hợp trên Postgres thật |
 | `npm run lint` | ESLint |
+| `npm run docs:export` | Ghi lại `docs/openapi.json` + `docs/postman_collection.json` |
 | `docker compose up -d --build` | Chạy bằng Docker như trên VPS |
 
 Chạy test tích hợp: tạo DB tên có chữ `test` (script xóa sạch schema của DB đó), rồi

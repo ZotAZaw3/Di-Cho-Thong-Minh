@@ -1,5 +1,7 @@
 # Tài liệu API backend
 
+Bản tương tác: `GET /it4788/docs` (Swagger UI), `GET /it4788/openapi.json`; Postman: `docs/postman_collection.json`.
+
 Mọi API nằm dưới `/it4788`, nhận JSON (API có ảnh nhận `multipart/form-data`, ảnh ở trường `image`, tối đa 5 MB)
 và trả về:
 
