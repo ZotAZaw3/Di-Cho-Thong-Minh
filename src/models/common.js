@@ -80,6 +80,16 @@ export function withAliases(aliases, shape) {
   }, z.object(shape));
 }
 
+// Đường dẫn lỗi "không có trường nào để sửa"; validate() đổi thành mã riêng của API (00204, 00252, 00302).
+export const NEED_ONE = '_needOne';
+
+/** API sửa: phải có ít nhất một trường trong `fields`. */
+export const needOne = (schema, fields) =>
+  schema.refine((v) => fields.some((f) => v[f] !== undefined), {
+    message: `Cần ít nhất một trong các trường: ${fields.join(', ')}`,
+    path: [NEED_ONE],
+  });
+
 /** Mảng; form-data gửi mảng dưới dạng chuỗi JSON. */
 export const jsonArray = (schema, max = 50) =>
   z.preprocess((v) => {

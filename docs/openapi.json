@@ -3,7 +3,7 @@
   "info": {
     "title": "Đi chợ tiện lợi API (IT4788, nhóm 4)",
     "version": "1.0.0",
-    "description": "Mọi API trả về `{ code, message, data }`. API #1–49 theo tài liệu môn học, #50–55 mở rộng (sheet), #56–66 bổ sung theo đề bài.\nBody nhận tên trường theo tài liệu; tên app nhánh fe-tien dùng cũng được nhận (xem docs/api.md).\n\n| code | HTTP | Tên | Message | Nguồn |\n| --- | --- | --- | --- | --- |\n| `00000` | 200 | OK | Thành công | tmp |\n| `00000` | 201 | CREATED | Tạo thành công | tmp |\n| `00287` | 201 | TASKS_CREATED | Thêm nhiệm vụ thành công | app |\n| `00279` | 400 | BAD_REQUEST | Dữ liệu gửi lên không hợp lệ | app |\n| `00281` | 401 | UNAUTHORIZED | Phiên đăng nhập không hợp lệ hoặc đã hết hạn | app |\n| `00284` | 403 | FORBIDDEN | Bạn không có quyền thực hiện thao tác này | app |\n| `00019` | 403 | ADMIN_ONLY | Chỉ quản trị viên được dùng chức năng này | doc |\n| `00044` | 403 | EMAIL_NOT_CONFIRMED | Email chưa được xác minh | doc |\n| `00024` | 429 | RATE_LIMITED | Gửi yêu cầu quá nhiều, vui lòng thử lại sau | doc |\n| `INVALID_CREDENTIALS` | 401 | INVALID_CREDENTIALS | Email hoặc mật khẩu không đúng | tmp |\n| `ACCOUNT_BLOCKED` | 403 | ACCOUNT_BLOCKED | Tài khoản đã bị khóa | tmp |\n| `EMAIL_EXISTS` | 409 | EMAIL_EXISTS | Email đã được đăng ký | tmp |\n| `USERNAME_EXISTS` | 409 | USERNAME_EXISTS | Tên đăng nhập đã tồn tại | tmp |\n| `INVALID_CODE` | 400 | INVALID_CODE | Mã xác minh không đúng hoặc đã hết hạn | tmp |\n| `WRONG_PASSWORD` | 400 | WRONG_PASSWORD | Mật khẩu cũ không đúng | tmp |\n| `NO_GROUP` | 403 | NO_GROUP | Bạn chưa thuộc nhóm gia đình nào | tmp |\n| `ALREADY_IN_GROUP` | 409 | ALREADY_IN_GROUP | Người dùng đã ở trong một nhóm | tmp |\n| `NOT_FOUND` | 404 | NOT_FOUND | Không tìm thấy dữ liệu | tmp |\n| `CONFLICT` | 409 | CONFLICT | Dữ liệu đã tồn tại | tmp |\n| `IN_USE` | 409 | IN_USE | Dữ liệu đang được sử dụng, không thể xóa | tmp |\n| `ROUTE_NOT_FOUND` | 404 | ROUTE_NOT_FOUND | Không tìm thấy API | tmp |\n| `INTERNAL_ERROR` | 500 | INTERNAL_ERROR | Lỗi máy chủ | tmp |"
+    "description": "Mọi API trả về `{ code, message, data }`. API #1–49 theo tài liệu môn học, #50–55 mở rộng (sheet), #56–66 bổ sung theo đề bài.\nBody nhận tên trường theo tài liệu; tên app nhánh fe-tien dùng cũng được nhận (xem docs/api.md).\n\nMã response theo bảng mã của file mô tả API môn học: mỗi API #1–49 có mã thành công và mã lỗi riêng\n(ghi trong phần mô tả của từng API). Bảng dưới là mã chung, dùng khi API không có mã riêng cho trường hợp đó\n(gồm API #50–66). Dải 009xx là mã riêng của nhóm, tài liệu không có.\n\n| code | HTTP | Tên | Message |\n| --- | --- | --- | --- |\n| `00000` | 200 | OK | Thành công |\n| `00000` | 201 | CREATED | Tạo thành công |\n| `00006` | 401 | NO_TOKEN | Truy cập bị từ chối. Không có token được cung cấp |\n| `00008` | 500 | INTERNAL_ERROR | Đã xảy ra lỗi máy chủ nội bộ, vui lòng thử lại |\n| `00011` | 401 | SESSION_EXPIRED | Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại |\n| `00012` | 401 | UNAUTHORIZED | Token không hợp lệ |\n| `00017` | 403 | FORBIDDEN | Bạn không có quyền thực hiện thao tác này |\n| `00019` | 403 | ADMIN_ONLY | Truy cập bị từ chối. Chỉ quản trị viên được dùng chức năng này |\n| `00024` | 429 | RATE_LIMITED | Gửi yêu cầu quá nhiều, vui lòng thử lại sau |\n| `00032` | 409 | EMAIL_EXISTS | Email đã được đăng ký |\n| `00044` | 403 | EMAIL_NOT_CONFIRMED | Email chưa được xác minh |\n| `00045` | 401 | INVALID_CREDENTIALS | Email hoặc mật khẩu không đúng |\n| `00054` | 400 | INVALID_CODE | Mã xác minh không đúng hoặc đã hết hạn |\n| `00072` | 400 | WRONG_PASSWORD | Mật khẩu cũ không đúng |\n| `00084` | 409 | USERNAME_EXISTS | Tên đăng nhập đã tồn tại |\n| `00093` | 409 | ALREADY_IN_GROUP | Người dùng đã ở trong một nhóm |\n| `00096` | 403 | NO_GROUP | Bạn chưa thuộc nhóm gia đình nào |\n| `00900` | 400 | BAD_REQUEST | Dữ liệu gửi lên không hợp lệ |\n| `00903` | 403 | ACCOUNT_BLOCKED | Tài khoản đã bị khóa |\n| `00904` | 404 | NOT_FOUND | Không tìm thấy dữ liệu |\n| `00905` | 404 | ROUTE_NOT_FOUND | Không tìm thấy API |\n| `00909` | 409 | CONFLICT | Dữ liệu đã tồn tại hoặc không ở trạng thái phù hợp |\n| `00910` | 409 | IN_USE | Dữ liệu đang được sử dụng, không thể xóa |"
   },
   "servers": [
     {
@@ -67,8 +67,33 @@
         "summary": "#0 Kiểm tra server",
         "operationId": "getHealth",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -104,8 +129,33 @@
         "summary": "#9 Tạo nhóm (người tạo là trưởng nhóm)",
         "operationId": "postUserGroup",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00095)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -135,7 +185,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập.",
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00095` | Thành công |\n| `00093` | Đã ở trong một nhóm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -163,8 +213,33 @@
         "summary": "#11 Xóa thành viên",
         "operationId": "deleteUserGroup",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00106)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -194,7 +269,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00106` | Thành công |\n| `00103` | Không tìm thấy |\n| `00104` | Không có quyền |\n| `00107` | Thiếu trường bắt buộc |\n| `00107` | Trường `username` sai | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "username",
@@ -215,8 +290,33 @@
         "summary": "#12 Xem nhóm và thành viên",
         "operationId": "getUserGroup",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00098)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -246,7 +346,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00098` | Thành công |\n| `00096` | Chưa vào nhóm |"
       }
     },
     "/user/group/add/": {
@@ -257,8 +357,33 @@
         "summary": "#10 Thêm thành viên",
         "operationId": "postUserGroupAdd",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00102)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -288,7 +413,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00102` | Thành công |\n| `00099` | Đã ở trong một nhóm |\n| `00099` | Không tìm thấy |\n| `00100` | Thiếu trường bắt buộc |\n| `00100` | Trường `username` sai |\n| `00101` | Không có quyền |",
         "requestBody": {
           "required": true,
           "content": {
@@ -322,8 +447,33 @@
         "summary": "#61 Rời nhóm",
         "operationId": "postUserGroupLeave",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -364,8 +514,33 @@
         "summary": "#62 Chuyển quyền trưởng nhóm",
         "operationId": "putUserGroupLeader",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -429,8 +604,33 @@
         "summary": "#1 Đăng nhập",
         "operationId": "postUserLogin",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00047)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -456,6 +656,7 @@
           }
         },
         "security": [],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00047` | Thành công |\n| `00038` | Thiếu trường bắt buộc |\n| `00039` | Trường `email` sai |\n| `00040` | Trường `password` sai |\n| `00044` | Email chưa xác minh |\n| `00045` | Sai email hoặc mật khẩu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -500,8 +701,33 @@
         "summary": "#2 Đăng ký (gửi mã xác minh email)",
         "operationId": "postUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00035)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -527,6 +753,7 @@
           }
         },
         "security": [],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00035` | Thành công |\n| `00025` | Thiếu trường bắt buộc |\n| `00026` | Trường `email` sai |\n| `00027` | Trường `password` sai |\n| `00028` | Trường `name` sai |\n| `00032` | Email đã tồn tại |",
         "requestBody": {
           "required": true,
           "content": {
@@ -584,8 +811,33 @@
         "summary": "#8 Sửa thông tin cá nhân (form-data, ảnh ở trường image)",
         "operationId": "putUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00086)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -615,7 +867,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập.",
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00086` | Thành công |\n| `00077` | Trường `name` sai |\n| `00079` | Trường `language` sai |\n| `00081` | Trường `username` sai |\n| `00084` | Username đã tồn tại |",
         "requestBody": {
           "required": true,
           "content": {
@@ -671,8 +923,33 @@
         "summary": "#13 Thông tin người dùng hiện tại",
         "operationId": "getUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00089)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -702,7 +979,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập."
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00089` | Thành công |"
       },
       "delete": {
         "tags": [
@@ -711,8 +988,33 @@
         "summary": "#14 Xóa tài khoản",
         "operationId": "deleteUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00092)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -742,7 +1044,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập."
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00092` | Thành công |"
       }
     },
     "/user/logout/": {
@@ -753,8 +1055,33 @@
         "summary": "#3 Đăng xuất",
         "operationId": "postUserLogout",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00050)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -783,7 +1110,8 @@
           {
             "bearer": []
           }
-        ]
+        ],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00050` | Thành công |"
       }
     },
     "/user/refresh-token/": {
@@ -794,8 +1122,33 @@
         "summary": "#4 Làm mới access token",
         "operationId": "postUserRefreshToken",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00065)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -821,6 +1174,7 @@
           }
         },
         "security": [],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00065` | Thành công |\n| `00059` | Thiếu trường bắt buộc |\n| `00059` | Trường `refreshToken` sai |\n| `00062` | Token hết hạn |\n| `00063` | Token không hợp lệ |",
         "requestBody": {
           "required": true,
           "content": {
@@ -854,8 +1208,33 @@
         "summary": "#5 Gửi lại mã xác minh",
         "operationId": "postUserSendVerificationCode",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00048)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -881,6 +1260,7 @@
           }
         },
         "security": [],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00048` | Thành công |\n| `00005` | Thiếu trường bắt buộc |\n| `00005` | Trường `email` sai |",
         "requestBody": {
           "required": true,
           "content": {
@@ -915,8 +1295,33 @@
         "summary": "#6 Xác minh email bằng mã 6 số",
         "operationId": "postUserVerifyEmail",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00058)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -942,6 +1347,7 @@
           }
         },
         "security": [],
+        "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00058` | Thành công |\n| `00053` | Thiếu trường bắt buộc |\n| `00054` | Trường `code` sai |\n| `00054` | Mã xác minh sai |\n| `00055` | Token xác minh sai |",
         "requestBody": {
           "required": true,
           "content": {
@@ -985,8 +1391,33 @@
         "summary": "#7 Đổi mật khẩu",
         "operationId": "postUserChangePassword",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00076)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1016,7 +1447,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập.",
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00076` | Thành công |\n| `00069` | Thiếu trường bắt buộc |\n| `00069` | Trường `oldPassword` sai |\n| `00069` | Trường `newPassword` sai |\n| `00072` | Mật khẩu cũ sai |\n| `00073` | Giá trị mới trùng giá trị cũ |",
         "requestBody": {
           "required": true,
           "content": {
@@ -1056,8 +1487,33 @@
         "summary": "#50 Đăng ký FCM token của thiết bị",
         "operationId": "putUserDevice",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1130,8 +1586,33 @@
         "summary": "#15 Tạo category",
         "operationId": "postAdminCategory",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00135)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1161,7 +1642,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00135` | Thành công |\n| `00131` | Thiếu trường bắt buộc |\n| `00131` | Trường `name` sai |\n| `00132` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -1202,8 +1683,33 @@
         "summary": "#16 Danh sách category",
         "operationId": "getAdminCategory",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00129)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1233,7 +1739,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019)."
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
       },
       "put": {
         "tags": [
@@ -1242,8 +1748,33 @@
         "summary": "#17 Đổi tên category",
         "operationId": "putAdminCategory",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00141)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1273,7 +1804,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00141` | Thành công |\n| `00136` | Thiếu trường bắt buộc |\n| `00136` | Trường `oldName` sai |\n| `00136` | Trường `newName` sai |\n| `00137` | Giá trị mới trùng giá trị cũ |\n| `00138` | Không tìm thấy |\n| `00138` | Không tìm thấy category |\n| `00138` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -1312,8 +1843,33 @@
         "summary": "#18 Xóa category",
         "operationId": "deleteAdminCategory",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00146)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1343,7 +1899,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00146` | Thành công |\n| `00142` | Thiếu trường bắt buộc |\n| `00142` | Trường `name` sai |\n| `00143` | Không tìm thấy |\n| `00143` | Không tìm thấy category | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "name",
@@ -1366,8 +1922,33 @@
         "summary": "#19 Tạo đơn vị",
         "operationId": "postAdminUnit",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00116)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1397,7 +1978,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00116` | Thành công |\n| `00112` | Thiếu trường bắt buộc |\n| `00112` | Trường `name` sai |\n| `00113` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -1437,8 +2018,33 @@
         "summary": "#20 Danh sách đơn vị",
         "operationId": "getAdminUnit",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00110)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1468,7 +2074,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019)."
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
       },
       "put": {
         "tags": [
@@ -1477,8 +2083,33 @@
         "summary": "#21 Đổi tên đơn vị",
         "operationId": "putAdminUnit",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00122)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1508,7 +2139,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00122` | Thành công |\n| `00117` | Thiếu trường bắt buộc |\n| `00117` | Trường `oldName` sai |\n| `00117` | Trường `newName` sai |\n| `00118` | Giá trị mới trùng giá trị cũ |\n| `00119` | Không tìm thấy |\n| `00119` | Không tìm thấy đơn vị |\n| `00113` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -1543,8 +2174,33 @@
         "summary": "#22 Xóa đơn vị",
         "operationId": "deleteAdminUnit",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00128)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1574,7 +2230,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00128` | Thành công |\n| `00123` | Thiếu trường bắt buộc |\n| `00123` | Trường `name` sai |\n| `00125` | Không tìm thấy |\n| `00125` | Không tìm thấy đơn vị | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "name",
@@ -1597,8 +2253,33 @@
         "summary": "#23 Xem log hệ thống",
         "operationId": "getAdminLogs",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00109)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1628,7 +2309,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Chỉ admin (00019).",
+        "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00109` | Thành công |",
         "parameters": [
           {
             "name": "page",
@@ -1710,8 +2391,33 @@
         "summary": "#53 Danh sách tài khoản",
         "operationId": "getAdminUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1795,8 +2501,33 @@
         "summary": "#53 Khóa / mở khóa tài khoản",
         "operationId": "putAdminUser",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1874,8 +2605,33 @@
         "summary": "#65 Danh mục thực phẩm chung",
         "operationId": "getAdminFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -1947,8 +2703,33 @@
         "summary": "#65 Thêm thực phẩm chung",
         "operationId": "postAdminFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2107,8 +2888,33 @@
         "summary": "#65 Sửa thực phẩm chung",
         "operationId": "putAdminFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2256,8 +3062,33 @@
         "summary": "#65 Xóa thực phẩm chung",
         "operationId": "deleteAdminFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2310,8 +3141,33 @@
         "summary": "#66 Xem cấu hình hệ thống",
         "operationId": "getAdminConfig",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2350,8 +3206,33 @@
         "summary": "#66 Sửa cấu hình: { expiryDays: 5 } hoặc { key, value }",
         "operationId": "putAdminConfig",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2392,8 +3273,33 @@
         "summary": "#35 Tạo danh sách mua sắm",
         "operationId": "postShopping",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00249)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2423,7 +3329,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00249` | Thành công |\n| `00238` | Thiếu trường bắt buộc |\n| `00239` | Thiếu `name` |\n| `00239` | Trường `name` sai |\n| `00241` | Trường `note` sai |\n| `00242` | Trường `date` sai |\n| `00245` | Người được giao không thuộc nhóm |\n| `00246` | Không có quyền giao cho người khác |",
         "requestBody": {
           "required": true,
           "content": {
@@ -2476,8 +3382,33 @@
         "summary": "#36 Sửa danh sách (trưởng nhóm / người tạo)",
         "operationId": "putShopping",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00266)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2507,7 +3438,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00266` | Thành công |\n| `00250` | Thiếu trường bắt buộc |\n| `00251` | Trường `listId` sai |\n| `00252` | Không có trường nào để sửa |\n| `00253` | Trường `newName` sai |\n| `00254` | Trường `newAssignToUsername` sai |\n| `00255` | Trường `newNote` sai |\n| `00256` | Trường `newDate` sai |\n| `00260` | Không tìm thấy |\n| `00261` | Không có quyền |\n| `00262` | Người được giao không thuộc nhóm |\n| `00263` | Không có quyền giao cho người khác |",
         "requestBody": {
           "required": true,
           "content": {
@@ -2571,8 +3502,33 @@
         "summary": "#37 Xóa danh sách (trưởng nhóm / người tạo)",
         "operationId": "deleteShopping",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00275)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2602,7 +3558,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00275` | Thành công |\n| `00267` | Thiếu trường bắt buộc |\n| `00268` | Trường `listId` sai |\n| `00272` | Không tìm thấy |\n| `00273` | Không có quyền | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "listId",
@@ -2623,8 +3579,33 @@
         "summary": "#51 Các danh sách mua sắm kèm mặt hàng",
         "operationId": "getShopping",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2696,8 +3677,33 @@
         "summary": "#59 Sao chép danh sách cũ để dùng lại",
         "operationId": "postShoppingCopy",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2778,11 +3784,36 @@
         "tags": [
           "8. Mua sắm"
         ],
-        "summary": "#38 Thêm mặt hàng (mã 00287; trùng món thì không thêm món nào)",
+        "summary": "#38 Thêm mặt hàng (trùng món thì không thêm món nào)",
         "operationId": "postShoppingTask",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00287)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2812,7 +3843,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00287` | Thành công |\n| `00276` | Thiếu trường bắt buộc |\n| `00277` | Thiếu `listId` |\n| `00277` | Trường `listId` sai |\n| `00278` | Thiếu `tasks` |\n| `00279` | Trường `tasks` sai |\n| `00283` | Không tìm thấy |\n| `00284` | Không có quyền |\n| `00284` | Không có quyền giao cho người khác |\n| `00285` | Không tìm thấy thực phẩm |\n| `00285` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -2903,8 +3934,33 @@
         "summary": "#39 Danh sách mặt hàng",
         "operationId": "getShoppingTask",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00292)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -2934,7 +3990,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00292` | Thành công |\n| `00288` | Chưa vào nhóm |",
         "parameters": [
           {
             "name": "listId",
@@ -2977,8 +4033,33 @@
         "summary": "#40 Xóa mặt hàng",
         "operationId": "deleteShoppingTask",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00299)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3008,7 +4089,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00299` | Thành công |\n| `00293` | Thiếu trường bắt buộc |\n| `00294` | Trường `taskId` sai |\n| `00296` | Không tìm thấy |\n| `00297` | Không có quyền | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "taskId",
@@ -3029,8 +4110,33 @@
         "summary": "#41 Sửa mặt hàng",
         "operationId": "putShoppingTask",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00312)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3060,7 +4166,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00312` | Thành công |\n| `00300` | Thiếu trường bắt buộc |\n| `00301` | Trường `taskId` sai |\n| `00302` | Không có trường nào để sửa |\n| `00303` | Trường `newFoodName` sai |\n| `00304` | Trường `newQuantity` sai |\n| `00306` | Không tìm thấy |\n| `00307` | Không có quyền |\n| `00307` | Không có quyền giao cho người khác |\n| `00308` | Không tìm thấy thực phẩm |\n| `00309` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -3126,8 +4232,33 @@
         "summary": "#52 Đánh dấu đã mua → cộng vào tủ lạnh (done=false để hoàn tác)",
         "operationId": "putShoppingTaskDone",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3214,8 +4345,33 @@
         "summary": "#24 Tạo thực phẩm riêng của nhóm",
         "operationId": "postFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00160)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3245,7 +4401,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00160` | Thành công |\n| `00147` | Thiếu trường bắt buộc |\n| `00148` | Trường `name` sai |\n| `00149` | Thiếu `categoryName` |\n| `00149` | Trường `categoryName` sai |\n| `00150` | Thiếu `unitName` |\n| `00150` | Trường `unitName` sai |\n| `00151` | Trùng dữ liệu |\n| `00153` | Không tìm thấy đơn vị |\n| `00155` | Không tìm thấy category |\n| `00156` | Chưa vào nhóm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -3374,8 +4530,33 @@
         "summary": "#25 Sửa thực phẩm của nhóm",
         "operationId": "putFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00178)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3405,7 +4586,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00178` | Thành công |\n| `00161` | Thiếu trường bắt buộc |\n| `00162` | Trường `name` sai |\n| `00163` | Không có trường nào để sửa |\n| `00164` | Trường `newCategory` sai |\n| `00165` | Trường `newUnit` sai |\n| `00166` | Trường `newName` sai |\n| `00167` | Không tìm thấy |\n| `00167` | Không có quyền |\n| `00169` | Không tìm thấy đơn vị |\n| `00171` | Không tìm thấy category |\n| `00173` | Trùng dữ liệu |",
         "requestBody": {
           "required": true,
           "content": {
@@ -3527,8 +4708,33 @@
         "summary": "#26 Xóa thực phẩm của nhóm",
         "operationId": "deleteFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00184)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3558,7 +4764,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00184` | Thành công |\n| `00179` | Thiếu trường bắt buộc |\n| `00179` | Trường `name` sai |\n| `00180` | Không tìm thấy |\n| `00181` | Không có quyền | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "name",
@@ -3579,8 +4785,33 @@
         "summary": "#27 Danh mục thực phẩm (tìm không dấu, lọc category)",
         "operationId": "getFood",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00188)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3610,7 +4841,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00188` | Thành công |\n| `00185` | Chưa vào nhóm |",
         "parameters": [
           {
             "name": "q",
@@ -3641,8 +4872,33 @@
         "summary": "#28 Danh sách đơn vị",
         "operationId": "getFoodUnit",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00110)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3672,7 +4928,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập."
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
       }
     },
     "/food/category/": {
@@ -3683,8 +4939,33 @@
         "summary": "#29 Danh sách category",
         "operationId": "getFoodCategory",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00129)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3714,7 +4995,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập."
+        "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
       }
     },
     "/fridge/": {
@@ -3725,8 +5006,33 @@
         "summary": "#30 Thêm đồ vào tủ (header Idempotency-Key chống thêm trùng)",
         "operationId": "postFridge",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00202)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3756,7 +5062,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00202` | Thành công |\n| `00190` | Trường `foodName` sai |\n| `00192` | Trường `quantity` sai |\n| `00193` | Trường `note` sai |\n| `00194` | Không tìm thấy thực phẩm |\n| `00196` | Chưa vào nhóm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -3826,8 +5132,33 @@
         "summary": "#31 Sửa đồ trong tủ",
         "operationId": "putFridge",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00216)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3857,7 +5188,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00216` | Thành công |\n| `00203` | Thiếu trường bắt buộc |\n| `00204` | Trường `itemId` sai |\n| `00204` | Không có trường nào để sửa |\n| `00206` | Trường `newQuantity` sai |\n| `00207` | Trường `newNote` sai |\n| `00207` | Trường `newFoodName` sai |\n| `00210` | Chưa vào nhóm |\n| `00213` | Không tìm thấy |\n| `00214` | Không tìm thấy thực phẩm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -3925,8 +5256,33 @@
         "summary": "#32 Bỏ đồ khỏi tủ",
         "operationId": "deleteFridge",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00224)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -3956,7 +5312,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00224` | Thành công |\n| `00217` | Thiếu trường bắt buộc |\n| `00217` | Trường `foodName` sai |\n| `00218` | Không tìm thấy thực phẩm |\n| `00221` | Không tìm thấy | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "itemId",
@@ -3986,8 +5342,33 @@
         "summary": "#33 Danh sách đồ trong tủ, hạn gần nhất trước",
         "operationId": "getFridge",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00228)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4017,7 +5398,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00228` | Thành công |\n| `00225` | Chưa vào nhóm |",
         "parameters": [
           {
             "name": "q",
@@ -4061,8 +5442,33 @@
         "summary": "#34 Đồ trong tủ theo tên thực phẩm",
         "operationId": "getFridge/FoodName",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00237)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4092,7 +5498,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00237` | Thành công |\n| `00229` | Thiếu trường bắt buộc |\n| `00229` | Trường `foodName` sai |\n| `00230` | Không tìm thấy thực phẩm |\n| `00234` | Không tìm thấy |",
         "parameters": [
           {
             "name": "foodName",
@@ -4113,8 +5519,33 @@
         "summary": "#42 Thêm món vào bữa",
         "operationId": "postMeal",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00322)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4144,7 +5575,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00322` | Thành công |\n| `00313` | Thiếu trường bắt buộc |\n| `00314` | Trường `foodName` sai |\n| `00315` | Trường `date` sai |\n| `00316` | Trường `mealType` sai |\n| `00317` | Không tìm thấy thực phẩm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -4204,8 +5635,33 @@
         "summary": "#43 Xóa món khỏi bữa",
         "operationId": "deleteMeal",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00330)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4235,7 +5691,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00330` | Thành công |\n| `00323` | Thiếu trường bắt buộc |\n| `00324` | Trường `planId` sai |\n| `00325` | Không tìm thấy | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "planId",
@@ -4256,8 +5712,33 @@
         "summary": "#44 Sửa món (không có planId thì tạo mới)",
         "operationId": "putMeal",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00344)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4287,7 +5768,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00344` | Thành công |\n| `00331` | Thiếu trường bắt buộc |\n| `00332` | Thiếu `planId` |\n| `00332` | Trường `planId` sai |\n| `00333` | Không có trường nào để sửa |\n| `00334` | Trường `newFoodName` sai |\n| `00335` | Trường `newDate` sai |\n| `00336` | Trường `newMealType` sai |\n| `00337` | Không tìm thấy |\n| `00341` | Không tìm thấy thực phẩm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -4375,8 +5856,33 @@
         "summary": "#45 Xem theo ngày hoặc tuần (from/to, tối đa 62 ngày)",
         "operationId": "getMeal",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00348)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4406,7 +5912,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00348` | Thành công |\n| `00345` | Chưa vào nhóm |",
         "parameters": [
           {
             "name": "date",
@@ -4446,8 +5952,33 @@
         "summary": "#60 Nấu xong: trừ nguyên liệu khỏi tủ lạnh",
         "operationId": "postMealCook",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4523,8 +6054,33 @@
         "summary": "#54 Gợi ý món từ đồ trong tủ",
         "operationId": "getRecipeSuggest",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4577,8 +6133,33 @@
         "summary": "#56 Thêm công thức yêu thích",
         "operationId": "postRecipeFavorite",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4640,8 +6221,33 @@
         "summary": "#57 Bỏ công thức yêu thích",
         "operationId": "deleteRecipeFavorite",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4692,8 +6298,33 @@
         "summary": "#58 Công thức yêu thích của tôi",
         "operationId": "getRecipeFavorite",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4763,8 +6394,33 @@
         "summary": "#46 Tạo công thức",
         "operationId": "postRecipe",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00357)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -4794,7 +6450,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00357` | Thành công |\n| `00349` | Thiếu trường bắt buộc |\n| `00350` | Trường `foodName` sai |\n| `00351` | Trường `name` sai |\n| `00352` | Trường `description` sai |\n| `00353` | Trường `htmlContent` sai |\n| `00354` | Không tìm thấy thực phẩm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -4978,8 +6634,33 @@
         "summary": "#47 Sửa công thức",
         "operationId": "putRecipe",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00370)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -5009,7 +6690,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00370` | Thành công |\n| `00358` | Thiếu trường bắt buộc |\n| `00359` | Thiếu `recipeId` |\n| `00359` | Trường `recipeId` sai |\n| `00360` | Không có trường nào để sửa |\n| `00361` | Trường `newFoodName` sai |\n| `00362` | Trường `newDescription` sai |\n| `00363` | Trường `newHtmlContent` sai |\n| `00364` | Trường `newName` sai |\n| `00365` | Không tìm thấy |\n| `00367` | Không tìm thấy thực phẩm |",
         "requestBody": {
           "required": true,
           "content": {
@@ -5189,8 +6870,33 @@
         "summary": "#48 Xóa công thức",
         "operationId": "deleteRecipe",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00376)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -5220,7 +6926,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00376` | Thành công |\n| `00371` | Thiếu trường bắt buộc |\n| `00372` | Trường `recipeId` sai |\n| `00373` | Không tìm thấy | Tham số gửi trong query hoặc body.",
         "parameters": [
           {
             "name": "recipeId",
@@ -5241,8 +6947,33 @@
         "summary": "#49 Danh sách công thức (lọc foodId, q, favorite)",
         "operationId": "getRecipe",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00378)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -5272,7 +7003,7 @@
             "bearer": []
           }
         ],
-        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+        "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00378` | Thành công |",
         "parameters": [
           {
             "name": "foodId",
@@ -5312,8 +7043,33 @@
         "summary": "#55 Thống kê mua sắm và tiêu thụ",
         "operationId": "getReport",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -5374,8 +7130,33 @@
         "summary": "#63 Hộp thư thông báo nhắc hết hạn",
         "operationId": "getNotification",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {
@@ -5448,8 +7229,33 @@
         "summary": "#64 Đánh dấu đã đọc (bỏ trống ids = tất cả)",
         "operationId": "putNotificationRead",
         "responses": {
-          "200": {
-            "description": "Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã",
+          "2XX": {
+            "description": "Thành công (code 00000)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "example": "00000"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung",
             "content": {
               "application/json": {
                 "schema": {

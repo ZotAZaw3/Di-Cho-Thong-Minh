@@ -4,6 +4,7 @@ import { createApp } from '../src/app.js';
 import { ORIGINAL_APIS, EXTENSION_APIS, SRS_APIS } from './apiList.js';
 import { apiRouter } from '../src/routes/index.js';
 import { EXAMPLES, collectRoutes } from '../src/docs/openapi.js';
+import { API_CODES, CODES, resolveCode } from '../src/utils/codes.js';
 
 const app = createApp();
 const PREFIX = '/it4788';
@@ -23,20 +24,55 @@ describe('Danh sách API', () => {
   });
 });
 
+describe('Bảng mã theo tài liệu môn học', () => {
+  const routes = new Set(collectRoutes(apiRouter).map((r) => `${r.method} ${r.path}`));
+  const routeOf = ([, method, path]) => {
+    const clean = path.split('?')[0].replace(/\/$/, '');
+    return `${method} ${clean.startsWith('/fridge/') ? '/fridge/:foodName' : clean || '/'}`;
+  };
+
+  it('mỗi route trong API_CODES có thật, mỗi API gốc có mã thành công riêng', () => {
+    for (const key of Object.keys(API_CODES)) expect(routes.has(key), key).toBe(true);
+    for (const api of ORIGINAL_APIS) expect(API_CODES[routeOf(api)]?.OK, routeOf(api)).toBeDefined();
+  });
+
+  it('mã đúng định dạng 5 chữ số; mã riêng nằm trong dải của tài liệu, mã riêng của nhóm ở 009xx', () => {
+    for (const [key, e] of Object.entries(CODES)) expect(e.code, key).toMatch(/^\d{5}$/);
+    for (const [route, profile] of Object.entries(API_CODES)) {
+      for (const v of Object.values(profile)) {
+        const code = Array.isArray(v) ? v[0] : v;
+        expect(Number(code), `${route} ${code}`).toBeGreaterThan(0);
+        expect(Number(code), `${route} ${code}`).toBeLessThan(380);
+      }
+    }
+  });
+
+  it('chọn mã theo route và reason; không khớp thì dùng mã chung', () => {
+    expect(resolveCode('POST /shopping/task', 'CREATED')).toEqual({ code: '00287', message: 'Thêm nhiệm vụ thành công' });
+    expect(resolveCode('POST /shopping/task', 'FORBIDDEN').code).toBe('00284');
+    expect(resolveCode('POST /shopping/task', 'BAD_REQUEST', ['tasks', 'missing']).code).toBe('00279');
+    expect(resolveCode('POST /shopping/task', 'BAD_REQUEST', ['missing:tasks', 'missing', 'tasks']).code).toBe('00278');
+    expect(resolveCode('POST /food', 'NOT_FOUND', ['unit']).code).toBe('00153');
+    expect(resolveCode('POST /meal', 'NOT_FOUND', ['recipe']).code).toBe(CODES.NOT_FOUND.code);
+    expect(resolveCode('GET /recipe/suggest', 'OK').code).toBe('00000');
+    expect(resolveCode(null, 'ROUTE_NOT_FOUND').code).toBe('00905');
+  });
+});
+
 describe('Các path dễ nhầm trỏ đúng handler', () => {
-  // Không có token: mọi route cần đăng nhập trả 00281; route công khai kiểm tra body trước (00279).
+  // Không có token: mọi route cần đăng nhập trả 00006; route công khai kiểm tra body trước (mã thiếu trường của API đó).
   it.each([
-    ['GET', '/user/group/', '00281'],
-    ['GET', '/user/', '00281'],
-    ['GET', '/fridge/Thịt bò/', '00281'],
-    ['GET', '/recipe/suggest/', '00281'],
-    ['PUT', '/shopping/task/done/', '00281'],
-    ['GET', '/recipe/favorite/', '00281'],
-    ['POST', '/shopping/copy/', '00281'],
-    ['GET', '/notification/', '00281'],
-    ['POST', '/user/', '00279'],
-    ['POST', '/user/login/', '00279'],
-    ['POST', '/user/refresh-token/', '00279'],
+    ['GET', '/user/group/', '00006'],
+    ['GET', '/user/', '00006'],
+    ['GET', '/fridge/Thịt bò/', '00006'],
+    ['GET', '/recipe/suggest/', '00006'],
+    ['PUT', '/shopping/task/done/', '00006'],
+    ['GET', '/recipe/favorite/', '00006'],
+    ['POST', '/shopping/copy/', '00006'],
+    ['GET', '/notification/', '00006'],
+    ['POST', '/user/', '00025'],
+    ['POST', '/user/login/', '00038'],
+    ['POST', '/user/refresh-token/', '00059'],
   ])('%s %s → %s', async (method, path, code) => {
     const res = await request(app)[method.toLowerCase()](encodeURI(PREFIX + path)).send({});
     expect(res.body.code).toBe(code);

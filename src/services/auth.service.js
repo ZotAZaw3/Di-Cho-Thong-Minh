@@ -6,6 +6,7 @@ import * as users from '../repositories/user.repository.js';
 import { findActiveMembership } from '../repositories/group.repository.js';
 import { presentUser } from '../models/presenters.js';
 import { ApiError } from '../utils/response.js';
+import { isJwtExpired } from '../utils/jwt.js';
 
 // Nhóm 1 · Xác thực. Mật khẩu, mã OTP và token do auth gateway lo (Supabase Auth hoặc local);
 // service này giữ bảng users khớp với tài khoản Auth.
@@ -22,7 +23,7 @@ async function readVerifyToken(token) {
     const { payload } = await jwtVerify(token, verifyKey, { algorithms: ['HS256'] });
     return payload.email;
   } catch {
-    throw new ApiError('INVALID_CODE', { message: 'Token xác minh không hợp lệ hoặc đã hết hạn' });
+    throw new ApiError('INVALID_CODE', { message: 'Token xác minh không hợp lệ hoặc đã hết hạn', reason: 'token' });
   }
 }
 
@@ -87,6 +88,7 @@ export async function login({ email, password, deviceId }) {
 }
 
 export async function refreshToken({ refreshToken: token }) {
+  if (isJwtExpired(token)) throw new ApiError('SESSION_EXPIRED', { message: 'Refresh token đã hết hạn, vui lòng đăng nhập lại' });
   const tokens = await auth().refresh(token);
   return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, expiresIn: tokens.expiresIn, tokenType: 'Bearer' };
 }
@@ -97,6 +99,9 @@ export async function logout(accessToken) {
 }
 
 export async function changePassword(user, { oldPassword, newPassword }) {
+  if (oldPassword === newPassword) {
+    throw new ApiError('BAD_REQUEST', { message: 'Mật khẩu mới phải khác mật khẩu cũ', reason: 'same' });
+  }
   try {
     await auth().signIn(user.email, oldPassword);
   } catch (err) {

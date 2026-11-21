@@ -23,7 +23,7 @@ const PG_ERRORS = {
 // Express 5 tự chuyển lỗi của handler async vào đây.
 export function errorHandler(err, _req, res, _next) {
   if (err instanceof ApiError) {
-    return send(res, err.key, err.data, { message: err.customMessage });
+    return send(res, err.key, err.data, { message: err.customMessage, reasons: err.reasons });
   }
   // Body JSON sai cú pháp hoặc quá lớn (express.json).
   if (err?.type === 'entity.parse.failed' || err?.type === 'entity.too.large') {

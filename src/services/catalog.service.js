@@ -6,7 +6,14 @@ import { ApiError } from '../utils/response.js';
 
 // Nhóm 4 (Category), 5 (Unit) do admin quản lý; nhóm 6 (Thực phẩm) theo nhóm gia đình.
 
-const notFound = (what, name) => new ApiError('NOT_FOUND', { message: `Không tìm thấy ${what} "${name}"` });
+// reason chọn mã riêng của API theo tài liệu (vd. Create food: 'unit' → 00153, 'category' → 00155).
+const REASON = { category: 'category', 'đơn vị': 'unit' };
+const notFound = (what, name) =>
+  new ApiError('NOT_FOUND', { message: `Không tìm thấy ${what} "${name}"`, reason: REASON[what] });
+
+const sameName = (oldName, newName) => {
+  if (oldName === newName) throw new ApiError('BAD_REQUEST', { message: 'Tên mới trùng với tên cũ', reason: 'same' });
+};
 
 // ----- Category -----
 export const listCategories = async () => (await catalog.listCategories()).map(presentOption);
@@ -17,6 +24,7 @@ export async function createCategory({ name, description }) {
 }
 
 export async function renameCategory({ oldName, newName }) {
+  sameName(oldName, newName);
   const cat = await catalog.findCategoryByName(oldName);
   if (!cat) throw notFound('category', oldName);
   const dup = await catalog.findCategoryByName(newName);
@@ -56,6 +64,7 @@ export async function createUnit({ name, code }) {
 }
 
 export async function renameUnit({ oldName, newName }) {
+  sameName(oldName, newName);
   const unit = await catalog.findUnitByName(oldName);
   if (!unit) throw notFound('đơn vị', oldName);
   const dup = await catalog.findUnitByName(newName);
@@ -79,6 +88,7 @@ export async function resolveFood(groupId, { foodId, foodName }, db) {
   if (food) return food;
   const similar = foodName ? await catalog.similarFoodNames(groupId, foodName, db) : [];
   throw new ApiError('NOT_FOUND', {
+    reason: 'food',
     message: `Không tìm thấy thực phẩm "${foodName ?? foodId}"${similar.length ? `. Có phải: ${similar.join(', ')}?` : ''}`,
     data: similar.length ? { suggestions: similar } : null,
   });
@@ -165,6 +175,16 @@ async function updateFoodIn(groupId, food, { newName, newCategory, newUnit, unit
 
 export const createFood = (user, group, input, file, req) => insertFoodIn(group.id, user, input, file, req);
 
+/** Update food: phải có ít nhất một thứ để sửa (tài liệu: 00163). */
+function assertHasChanges({ newName, newCategory, newUnit, units }, file) {
+  if (newName === undefined && newCategory === undefined && newUnit === undefined && units === undefined && !file) {
+    throw new ApiError('BAD_REQUEST', {
+      message: 'Cần ít nhất một trong các trường: newName, newCategory, newUnit, units, image',
+      reason: 'need',
+    });
+  }
+}
+
 async function findOwnFood(group, name) {
   const food = await catalog.findFoodByName(group.id, name);
   if (!food) throw notFound('thực phẩm', name);
@@ -175,6 +195,7 @@ async function findOwnFood(group, name) {
 }
 
 export async function updateFood(group, input, file, req) {
+  assertHasChanges(input, file);
   return updateFoodIn(group.id, await findOwnFood(group, input.name), input, file, req);
 }
 
@@ -197,7 +218,10 @@ export async function adminListFoods({ q, category, scope }) {
   return (await catalog.listFoods(null, { q, category, scope })).map(presentFood);
 }
 export const adminCreateFood = (admin, input, file, req) => insertFoodIn(null, admin, input, file, req);
-export const adminUpdateFood = async (input, file, req) => updateFoodIn(null, await findGlobalFood(input.name), input, file, req);
+export async function adminUpdateFood(input, file, req) {
+  assertHasChanges(input, file);
+  return updateFoodIn(null, await findGlobalFood(input.name), input, file, req);
+}
 export async function adminDeleteFood({ name }) {
   const food = await findGlobalFood(name);
   await catalog.deactivateFood(food.id);

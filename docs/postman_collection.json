@@ -101,6 +101,7 @@
               "query": [],
               "variable": []
             },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00047` | Thành công |\n| `00038` | Thiếu trường bắt buộc |\n| `00039` | Trường `email` sai |\n| `00040` | Trường `password` sai |\n| `00044` | Email chưa xác minh |\n| `00045` | Sai email hoặc mật khẩu |",
             "auth": {
               "type": "noauth"
             },
@@ -148,6 +149,7 @@
               "query": [],
               "variable": []
             },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00035` | Thành công |\n| `00025` | Thiếu trường bắt buộc |\n| `00026` | Trường `email` sai |\n| `00027` | Trường `password` sai |\n| `00028` | Trường `name` sai |\n| `00032` | Email đã tồn tại |",
             "auth": {
               "type": "noauth"
             },
@@ -193,7 +195,8 @@
               ],
               "query": [],
               "variable": []
-            }
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00050` | Thành công |"
           },
           "event": [
             {
@@ -233,6 +236,7 @@
               "query": [],
               "variable": []
             },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00065` | Thành công |\n| `00059` | Thiếu trường bắt buộc |\n| `00059` | Trường `refreshToken` sai |\n| `00062` | Token hết hạn |\n| `00063` | Token không hợp lệ |",
             "auth": {
               "type": "noauth"
             },
@@ -279,6 +283,7 @@
               "query": [],
               "variable": []
             },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00048` | Thành công |\n| `00005` | Thiếu trường bắt buộc |\n| `00005` | Trường `email` sai |",
             "auth": {
               "type": "noauth"
             },
@@ -325,6 +330,7 @@
               "query": [],
               "variable": []
             },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00058` | Thành công |\n| `00053` | Thiếu trường bắt buộc |\n| `00054` | Trường `code` sai |\n| `00054` | Mã xác minh sai |\n| `00055` | Token xác minh sai |",
             "auth": {
               "type": "noauth"
             },
@@ -376,7 +382,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập.",
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00076` | Thành công |\n| `00069` | Thiếu trường bắt buộc |\n| `00069` | Trường `oldPassword` sai |\n| `00069` | Trường `newPassword` sai |\n| `00072` | Mật khẩu cũ sai |\n| `00073` | Giá trị mới trùng giá trị cũ |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"oldPassword\": \"123456\",\n  \"newPassword\": \"1234567\"\n}"
@@ -419,7 +425,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập.",
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00086` | Thành công |\n| `00077` | Trường `name` sai |\n| `00079` | Trường `language` sai |\n| `00081` | Trường `username` sai |\n| `00084` | Username đã tồn tại |",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -462,7 +468,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập."
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00089` | Thành công |"
           },
           "event": [
             {
@@ -501,7 +507,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập."
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00092` | Thành công |"
           },
           "event": [
             {
@@ -590,7 +596,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập.",
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00095` | Thành công |\n| `00093` | Đã ở trong một nhóm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Gia đình tôi\"\n}"
@@ -635,7 +641,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00102` | Thành công |\n| `00099` | Đã ở trong một nhóm |\n| `00099` | Không tìm thấy |\n| `00100` | Thiếu trường bắt buộc |\n| `00100` | Trường `username` sai |\n| `00101` | Không có quyền |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"username\": \"minh@dicho.local\"\n}"
@@ -685,7 +691,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00106` | Thành công |\n| `00103` | Không tìm thấy |\n| `00104` | Không có quyền |\n| `00107` | Thiếu trường bắt buộc |\n| `00107` | Trường `username` sai | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -725,7 +731,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00098` | Thành công |\n| `00096` | Chưa vào nhóm |"
           },
           "event": [
             {
@@ -856,7 +862,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00135` | Thành công |\n| `00131` | Thiếu trường bắt buộc |\n| `00131` | Trường `name` sai |\n| `00132` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Đồ đông lạnh\",\n  \"description\": \"Thực phẩm cấp đông\"\n}"
@@ -900,7 +906,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019)."
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
           },
           "event": [
             {
@@ -940,7 +946,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00141` | Thành công |\n| `00136` | Thiếu trường bắt buộc |\n| `00136` | Trường `oldName` sai |\n| `00136` | Trường `newName` sai |\n| `00137` | Giá trị mới trùng giá trị cũ |\n| `00138` | Không tìm thấy |\n| `00138` | Không tìm thấy category |\n| `00138` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"oldName\": \"Đồ đông lạnh\",\n  \"newName\": \"Đông lạnh\"\n}"
@@ -990,7 +996,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00146` | Thành công |\n| `00142` | Thiếu trường bắt buộc |\n| `00142` | Trường `name` sai |\n| `00143` | Không tìm thấy |\n| `00143` | Không tìm thấy category | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -1030,7 +1036,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00116` | Thành công |\n| `00112` | Thiếu trường bắt buộc |\n| `00112` | Trường `name` sai |\n| `00113` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"thùng\"\n}"
@@ -1074,7 +1080,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019)."
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
           },
           "event": [
             {
@@ -1114,7 +1120,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00122` | Thành công |\n| `00117` | Thiếu trường bắt buộc |\n| `00117` | Trường `oldName` sai |\n| `00117` | Trường `newName` sai |\n| `00118` | Giá trị mới trùng giá trị cũ |\n| `00119` | Không tìm thấy |\n| `00119` | Không tìm thấy đơn vị |\n| `00113` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"oldName\": \"\",\n  \"newName\": \"\"\n}"
@@ -1164,7 +1170,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00128` | Thành công |\n| `00123` | Thiếu trường bắt buộc |\n| `00123` | Trường `name` sai |\n| `00125` | Không tìm thấy |\n| `00125` | Không tìm thấy đơn vị | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -1240,7 +1246,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Chỉ admin (00019)."
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00109` | Thành công |"
           },
           "event": [
             {
@@ -1659,7 +1665,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00160` | Thành công |\n| `00147` | Thiếu trường bắt buộc |\n| `00148` | Trường `name` sai |\n| `00149` | Thiếu `categoryName` |\n| `00149` | Trường `categoryName` sai |\n| `00150` | Thiếu `unitName` |\n| `00150` | Trường `unitName` sai |\n| `00151` | Trùng dữ liệu |\n| `00153` | Không tìm thấy đơn vị |\n| `00155` | Không tìm thấy category |\n| `00156` | Chưa vào nhóm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Bánh bao\",\n  \"foodCategoryName\": \"Khác\",\n  \"unitName\": \"cái\",\n  \"units\": [\n    {\n      \"unitName\": \"gói\",\n      \"factor\": 6\n    }\n  ]\n}"
@@ -1702,7 +1708,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00178` | Thành công |\n| `00161` | Thiếu trường bắt buộc |\n| `00162` | Trường `name` sai |\n| `00163` | Không có trường nào để sửa |\n| `00164` | Trường `newCategory` sai |\n| `00165` | Trường `newUnit` sai |\n| `00166` | Trường `newName` sai |\n| `00167` | Không tìm thấy |\n| `00167` | Không có quyền |\n| `00169` | Không tìm thấy đơn vị |\n| `00171` | Không tìm thấy category |\n| `00173` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Bánh bao\",\n  \"newName\": \"Bánh bao chay\"\n}"
@@ -1751,7 +1757,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00184` | Thành công |\n| `00179` | Thiếu trường bắt buộc |\n| `00179` | Trường `name` sai |\n| `00180` | Không tìm thấy |\n| `00181` | Không có quyền | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -1801,7 +1807,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00188` | Thành công |\n| `00185` | Chưa vào nhóm |"
           },
           "event": [
             {
@@ -1841,7 +1847,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập."
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
           },
           "event": [
             {
@@ -1881,7 +1887,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập."
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
           },
           "event": [
             {
@@ -1925,7 +1931,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00202` | Thành công |\n| `00190` | Trường `foodName` sai |\n| `00192` | Trường `quantity` sai |\n| `00193` | Trường `note` sai |\n| `00194` | Không tìm thấy thực phẩm |\n| `00196` | Chưa vào nhóm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"foodName\": \"Trứng gà\",\n  \"quantity\": 1,\n  \"unit\": \"hộp\",\n  \"useWithin\": 7,\n  \"storageLocation\": \"Tủ lạnh\"\n}"
@@ -1968,7 +1974,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00216` | Thành công |\n| `00203` | Thiếu trường bắt buộc |\n| `00204` | Trường `itemId` sai |\n| `00204` | Không có trường nào để sửa |\n| `00206` | Trường `newQuantity` sai |\n| `00207` | Trường `newNote` sai |\n| `00207` | Trường `newFoodName` sai |\n| `00210` | Chưa vào nhóm |\n| `00213` | Không tìm thấy |\n| `00214` | Không tìm thấy thực phẩm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"itemId\": 1,\n  \"newQuantity\": 5,\n  \"newUseWithin\": 3\n}"
@@ -2022,7 +2028,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00224` | Thành công |\n| `00217` | Thiếu trường bắt buộc |\n| `00217` | Trường `foodName` sai |\n| `00218` | Không tìm thấy thực phẩm |\n| `00221` | Không tìm thấy | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -2077,7 +2083,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00228` | Thành công |\n| `00225` | Chưa vào nhóm |"
           },
           "event": [
             {
@@ -2122,7 +2128,7 @@
                 }
               ]
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00237` | Thành công |\n| `00229` | Thiếu trường bắt buộc |\n| `00229` | Trường `foodName` sai |\n| `00230` | Không tìm thấy thực phẩm |\n| `00234` | Không tìm thấy |"
           },
           "event": [
             {
@@ -2166,7 +2172,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00249` | Thành công |\n| `00238` | Thiếu trường bắt buộc |\n| `00239` | Thiếu `name` |\n| `00239` | Trường `name` sai |\n| `00241` | Trường `note` sai |\n| `00242` | Trường `date` sai |\n| `00245` | Người được giao không thuộc nhóm |\n| `00246` | Không có quyền giao cho người khác |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Đi chợ cuối tuần\",\n  \"assignToUsername\": \"minh@dicho.local\",\n  \"date\": \"2026-12-05\"\n}"
@@ -2209,7 +2215,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00266` | Thành công |\n| `00250` | Thiếu trường bắt buộc |\n| `00251` | Trường `listId` sai |\n| `00252` | Không có trường nào để sửa |\n| `00253` | Trường `newName` sai |\n| `00254` | Trường `newAssignToUsername` sai |\n| `00255` | Trường `newNote` sai |\n| `00256` | Trường `newDate` sai |\n| `00260` | Không tìm thấy |\n| `00261` | Không có quyền |\n| `00262` | Người được giao không thuộc nhóm |\n| `00263` | Không có quyền giao cho người khác |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"listId\": 1,\n  \"newName\": \"Đi chợ thứ bảy\",\n  \"status\": \"active\"\n}"
@@ -2258,7 +2264,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00275` | Thành công |\n| `00267` | Thiếu trường bắt buộc |\n| `00268` | Trường `listId` sai |\n| `00272` | Không tìm thấy |\n| `00273` | Không có quyền | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -2276,7 +2282,7 @@
           ]
         },
         {
-          "name": "#38 Thêm mặt hàng (mã 00287; trùng món thì không thêm món nào)",
+          "name": "#38 Thêm mặt hàng (trùng món thì không thêm món nào)",
           "request": {
             "method": "POST",
             "header": [
@@ -2298,7 +2304,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00287` | Thành công |\n| `00276` | Thiếu trường bắt buộc |\n| `00277` | Thiếu `listId` |\n| `00277` | Trường `listId` sai |\n| `00278` | Thiếu `tasks` |\n| `00279` | Trường `tasks` sai |\n| `00283` | Không tìm thấy |\n| `00284` | Không có quyền |\n| `00284` | Không có quyền giao cho người khác |\n| `00285` | Không tìm thấy thực phẩm |\n| `00285` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"listId\": 1,\n  \"tasks\": [\n    {\n      \"foodName\": \"Cà chua\",\n      \"quantity\": 0.5,\n      \"unit\": \"kg\"\n    },\n    {\n      \"foodName\": \"Trứng gà\",\n      \"quantity\": 1,\n      \"unit\": \"hộp\"\n    }\n  ]\n}"
@@ -2358,7 +2364,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00292` | Thành công |\n| `00288` | Chưa vào nhóm |"
           },
           "event": [
             {
@@ -2404,7 +2410,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00299` | Thành công |\n| `00293` | Thiếu trường bắt buộc |\n| `00294` | Trường `taskId` sai |\n| `00296` | Không tìm thấy |\n| `00297` | Không có quyền | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -2444,7 +2450,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00312` | Thành công |\n| `00300` | Thiếu trường bắt buộc |\n| `00301` | Trường `taskId` sai |\n| `00302` | Không có trường nào để sửa |\n| `00303` | Trường `newFoodName` sai |\n| `00304` | Trường `newQuantity` sai |\n| `00306` | Không tìm thấy |\n| `00307` | Không có quyền |\n| `00307` | Không có quyền giao cho người khác |\n| `00308` | Không tìm thấy thực phẩm |\n| `00309` | Trùng dữ liệu |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"taskId\": 1,\n  \"newQuantity\": 2\n}"
@@ -2636,7 +2642,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00322` | Thành công |\n| `00313` | Thiếu trường bắt buộc |\n| `00314` | Trường `foodName` sai |\n| `00315` | Trường `date` sai |\n| `00316` | Trường `mealType` sai |\n| `00317` | Không tìm thấy thực phẩm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"recipeId\": 1,\n  \"timestamp\": \"2026-12-05\",\n  \"name\": \"tối\",\n  \"servings\": 4\n}"
@@ -2685,7 +2691,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00330` | Thành công |\n| `00323` | Thiếu trường bắt buộc |\n| `00324` | Trường `planId` sai |\n| `00325` | Không tìm thấy | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -2724,7 +2730,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00344` | Thành công |\n| `00331` | Thiếu trường bắt buộc |\n| `00332` | Thiếu `planId` |\n| `00332` | Trường `planId` sai |\n| `00333` | Không có trường nào để sửa |\n| `00334` | Trường `newFoodName` sai |\n| `00335` | Trường `newDate` sai |\n| `00336` | Trường `newMealType` sai |\n| `00337` | Không tìm thấy |\n| `00341` | Không tìm thấy thực phẩm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"planId\": 1,\n  \"newName\": \"trưa\"\n}"
@@ -2783,7 +2789,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00348` | Thành công |\n| `00345` | Chưa vào nhóm |"
           },
           "event": [
             {
@@ -2871,7 +2877,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00357` | Thành công |\n| `00349` | Thiếu trường bắt buộc |\n| `00350` | Trường `foodName` sai |\n| `00351` | Trường `name` sai |\n| `00352` | Trường `description` sai |\n| `00353` | Trường `htmlContent` sai |\n| `00354` | Không tìm thấy thực phẩm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Trứng hấp\",\n  \"htmlContent\": \"<ol><li>Đánh trứng</li><li>Hấp 10 phút</li></ol>\",\n  \"servings\": 2,\n  \"ingredients\": [\n    {\n      \"foodName\": \"Trứng gà\",\n      \"quantity\": 3,\n      \"unit\": \"quả\"\n    }\n  ]\n}"
@@ -2914,7 +2920,7 @@
               "query": [],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00370` | Thành công |\n| `00358` | Thiếu trường bắt buộc |\n| `00359` | Thiếu `recipeId` |\n| `00359` | Trường `recipeId` sai |\n| `00360` | Không có trường nào để sửa |\n| `00361` | Trường `newFoodName` sai |\n| `00362` | Trường `newDescription` sai |\n| `00363` | Trường `newHtmlContent` sai |\n| `00364` | Trường `newName` sai |\n| `00365` | Không tìm thấy |\n| `00367` | Không tìm thấy thực phẩm |",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"recipeId\": 1,\n  \"newName\": \"Trứng hấp thịt\"\n}"
@@ -2963,7 +2969,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00376` | Thành công |\n| `00371` | Thiếu trường bắt buộc |\n| `00372` | Trường `recipeId` sai |\n| `00373` | Không tìm thấy | Tham số gửi trong query hoặc body."
           },
           "event": [
             {
@@ -3018,7 +3024,7 @@
               ],
               "variable": []
             },
-            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00378` | Thành công |"
           },
           "event": [
             {

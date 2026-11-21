@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CODES } from '../utils/codes.js';
+import { CODES, API_CODES } from '../utils/codes.js';
 
 // Tài liệu OpenAPI 3.1 sinh từ chính các route và schema zod đang chạy, nên không lệch với code.
 // Xem tại GET /it4788/docs (Swagger UI) hoặc tải GET /it4788/openapi.json (import thẳng vào Postman).
@@ -45,7 +45,7 @@ const CATALOG = {
   'POST /shopping': [35, '8. Mua sắm', 'Tạo danh sách mua sắm'],
   'PUT /shopping': [36, '8. Mua sắm', 'Sửa danh sách (trưởng nhóm / người tạo)'],
   'DELETE /shopping': [37, '8. Mua sắm', 'Xóa danh sách (trưởng nhóm / người tạo)'],
-  'POST /shopping/task': [38, '8. Mua sắm', 'Thêm mặt hàng (mã 00287; trùng món thì không thêm món nào)'],
+  'POST /shopping/task': [38, '8. Mua sắm', 'Thêm mặt hàng (trùng món thì không thêm món nào)'],
   'GET /shopping/task': [39, '8. Mua sắm', 'Danh sách mặt hàng'],
   'DELETE /shopping/task': [40, '8. Mua sắm', 'Xóa mặt hàng'],
   'PUT /shopping/task': [41, '8. Mua sắm', 'Sửa mặt hàng'],
@@ -157,6 +157,51 @@ const envelope = (data = {}) => ({
   properties: { code: { type: 'string', example: '00000' }, message: { type: 'string' }, data },
 });
 
+const successCode = (method, path) => {
+  const ok = API_CODES[`${method} ${path}`]?.OK;
+  return Array.isArray(ok) ? ok[0] : (ok ?? CODES.OK.code);
+};
+
+// Giải thích ngắn cho tên mục trong API_CODES (src/utils/codes.js).
+const CASE = {
+  OK: 'Thành công',
+  'BAD_REQUEST:missing': 'Thiếu trường bắt buộc',
+  'BAD_REQUEST:need': 'Không có trường nào để sửa',
+  'BAD_REQUEST:same': 'Giá trị mới trùng giá trị cũ',
+  NOT_FOUND: 'Không tìm thấy',
+  'NOT_FOUND:food': 'Không tìm thấy thực phẩm',
+  'NOT_FOUND:unit': 'Không tìm thấy đơn vị',
+  'NOT_FOUND:category': 'Không tìm thấy category',
+  'NOT_FOUND:assignee': 'Người được giao không thuộc nhóm',
+  FORBIDDEN: 'Không có quyền',
+  'FORBIDDEN:assign': 'Không có quyền giao cho người khác',
+  CONFLICT: 'Trùng dữ liệu',
+  NO_GROUP: 'Chưa vào nhóm',
+  ALREADY_IN_GROUP: 'Đã ở trong một nhóm',
+  INVALID_CREDENTIALS: 'Sai email hoặc mật khẩu',
+  EMAIL_NOT_CONFIRMED: 'Email chưa xác minh',
+  EMAIL_EXISTS: 'Email đã tồn tại',
+  USERNAME_EXISTS: 'Username đã tồn tại',
+  WRONG_PASSWORD: 'Mật khẩu cũ sai',
+  INVALID_CODE: 'Mã xác minh sai',
+  'INVALID_CODE:token': 'Token xác minh sai',
+  SESSION_EXPIRED: 'Token hết hạn',
+  UNAUTHORIZED: 'Token không hợp lệ',
+};
+
+/** Bảng mã riêng của một API theo tài liệu môn học (markdown), null nếu API ngoài tài liệu. */
+function codeTable(method, path) {
+  const profile = API_CODES[`${method} ${path}`];
+  if (!profile) return null;
+  const rows = Object.entries(profile).map(([name, v]) => {
+    const code = Array.isArray(v) ? v[0] : v;
+    const [key, reason] = name.split(':');
+    const label = CASE[name] ?? (reason?.startsWith('missing') ? `Thiếu \`${name.split(':')[2]}\`` : reason ? `Trường \`${reason}\` sai` : key);
+    return `| \`${code}\` | ${label} |`;
+  });
+  return ['Mã theo tài liệu môn học:', '', '| code | Trường hợp |', '| --- | --- |', ...rows].join('\n');
+}
+
 function operation({ method, path, handlers }) {
   const [no, tag, summary] = CATALOG[`${method} ${path}`] ?? [null, 'Khác', path];
   const names = handlers.map((h) => h.name);
@@ -165,13 +210,16 @@ function operation({ method, path, handlers }) {
     summary: no !== null ? `#${no} ${summary}` : summary,
     operationId: `${method.toLowerCase()}${path.replace(/[/:-](\w)/g, (_m, c) => c.toUpperCase())}`,
     responses: {
-      200: { description: 'Thành công (code 00000) hoặc lỗi nghiệp vụ, xem bảng mã', content: { 'application/json': { schema: envelope() } } },
+      '2XX': { description: `Thành công (code ${successCode(method, path)})`, content: { 'application/json': { schema: envelope() } } },
+      '4XX': { description: 'Lỗi nghiệp vụ, code theo bảng bên dưới hoặc bảng mã chung', content: { 'application/json': { schema: envelope() } } },
     },
   };
   const notes = names.map((n) => AUTH_NOTE[n]).filter(Boolean);
   if (names.includes('requireAuth') || names.includes('readBearer')) op.security = [{ bearer: [] }];
   else op.security = [];
   if (notes.length) op.description = notes.join(' ');
+  const codes = codeTable(method, path);
+  if (codes) op.description = `${op.description ?? ''}\n\n${codes}`.trim();
 
   const params = [];
   for (const m of path.matchAll(/:(\w+)/g)) params.push({ name: m[1], in: 'path', required: true, schema: { type: 'string' } });
@@ -210,7 +258,7 @@ export function buildOpenApi(apiRouter, prefix) {
     paths[key][route.method.toLowerCase()] = operation(route);
   }
   const codeRows = Object.entries(CODES)
-    .map(([key, c]) => `| \`${c.code}\` | ${c.status} | ${key} | ${c.message} | ${c.source} |`)
+    .map(([key, c]) => `| \`${c.code}\` | ${c.status} | ${key} | ${c.message} |`)
     .join('\n');
   return {
     openapi: '3.1.0',
@@ -221,8 +269,12 @@ export function buildOpenApi(apiRouter, prefix) {
         'Mọi API trả về `{ code, message, data }`. API #1–49 theo tài liệu môn học, #50–55 mở rộng (sheet), #56–66 bổ sung theo đề bài.',
         'Body nhận tên trường theo tài liệu; tên app nhánh fe-tien dùng cũng được nhận (xem docs/api.md).',
         '',
-        '| code | HTTP | Tên | Message | Nguồn |',
-        '| --- | --- | --- | --- | --- |',
+        'Mã response theo bảng mã của file mô tả API môn học: mỗi API #1–49 có mã thành công và mã lỗi riêng',
+        '(ghi trong phần mô tả của từng API). Bảng dưới là mã chung, dùng khi API không có mã riêng cho trường hợp đó',
+        '(gồm API #50–66). Dải 009xx là mã riêng của nhóm, tài liệu không có.',
+        '',
+        '| code | HTTP | Tên | Message |',
+        '| --- | --- | --- | --- |',
         codeRows,
       ].join('\n'),
     },

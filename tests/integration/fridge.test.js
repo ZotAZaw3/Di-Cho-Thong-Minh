@@ -21,15 +21,15 @@ describe.skipIf(!hasDb)('Nhóm 7 · Tủ lạnh', () => {
     const hop = await call('post', '/fridge/', leader.token).send({ foodName: 'Trứng gà', quantity: 1, unit: 'hộp' });
     expect(hop.body.data.quantity).toBe(10);
     const bad = await call('post', '/fridge/', leader.token).send({ foodName: 'Trứng gà', quantity: 1, unit: 'kg' });
-    expect(bad.body).toMatchObject({ code: '00279', message: expect.stringContaining('không dùng được') });
+    expect(bad.body).toMatchObject({ code: '00900', message: expect.stringContaining('không dùng được') });
   });
 
   it('lỗi: thiếu thực phẩm, sai số lượng, không tìm thấy (kèm gợi ý)', async () => {
     const { leader } = await newFamily();
-    expect((await call('post', '/fridge/', leader.token).send({ quantity: 1 })).body.code).toBe('00279');
-    expect((await call('post', '/fridge/', leader.token).send({ foodName: 'Trứng gà', quantity: -1 })).body.code).toBe('00279');
+    expect((await call('post', '/fridge/', leader.token).send({ quantity: 1 })).body.code).toBe('00190');
+    expect((await call('post', '/fridge/', leader.token).send({ foodName: 'Trứng gà', quantity: -1 })).body.code).toBe('00192');
     const nf = await call('post', '/fridge/', leader.token).send({ foodName: 'Trứng', quantity: 1 });
-    expect(nf.body).toMatchObject({ code: 'NOT_FOUND', data: { suggestions: expect.arrayContaining(['Trứng gà']) } });
+    expect(nf.body).toMatchObject({ code: '00194', data: { suggestions: expect.arrayContaining(['Trứng gà']) } });
   });
 
   it('Idempotency-Key: gửi lại không thêm trùng', async () => {
@@ -55,7 +55,7 @@ describe.skipIf(!hasDb)('Nhóm 7 · Tủ lạnh', () => {
 
     expect((await call('get', '/fridge/Thịt bò/', leader.token)).body.data).toHaveLength(2);
     expect((await call('get', '/fridge/', leader.token).query({ location: 'Tủ bếp' })).body.data.map((i) => i.foodName)).toEqual(['Gạo']);
-    expect((await call('put', '/fridge/', leader.token).send({ itemId: 999999, newQuantity: 1 })).body.code).toBe('NOT_FOUND');
+    expect((await call('put', '/fridge/', leader.token).send({ itemId: 999999, newQuantity: 1 })).body.code).toBe('00213');
 
     const del = await call('delete', '/fridge/', leader.token).send({ foodName: 'Thịt bò' });
     expect(del.body.data.deleted).toHaveLength(2);
@@ -66,6 +66,6 @@ describe.skipIf(!hasDb)('Nhóm 7 · Tủ lạnh', () => {
     const a = await newFamily();
     const b = await newFamily();
     const item = (await call('post', '/fridge/', a.leader.token).send({ foodName: 'Cam', quantity: 1 })).body.data;
-    expect((await call('delete', '/fridge/', b.leader.token).send({ itemId: item.id })).body.code).toBe('NOT_FOUND');
+    expect((await call('delete', '/fridge/', b.leader.token).send({ itemId: item.id })).body.code).toBe('00221');
   });
 });

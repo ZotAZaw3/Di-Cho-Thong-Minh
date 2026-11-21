@@ -23,20 +23,26 @@ function assertCanManage(user, group, list) {
 /** Phân công cho người khác là việc của trưởng nhóm / người tạo danh sách; thành viên chỉ nhận việc cho mình. */
 function assertCanAssign(user, group, list, assigneeId) {
   if (assigneeId !== undefined && assigneeId !== user.id && !canManage(user, group, list)) {
-    throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm hoặc người tạo danh sách được phân công cho người khác' });
+    throw new ApiError('FORBIDDEN', {
+      message: 'Chỉ trưởng nhóm hoặc người tạo danh sách được phân công cho người khác',
+      reason: 'assign',
+    });
   }
 }
 
 function assertActive(list) {
   if (list.list_status !== 'active') {
-    throw new ApiError('CONFLICT', { message: 'Danh sách đã lưu trữ. Sao chép danh sách (POST shopping/copy/) để dùng lại' });
+    throw new ApiError('CONFLICT', {
+      message: 'Danh sách đã lưu trữ. Sao chép danh sách (POST shopping/copy/) để dùng lại',
+      reason: 'archived',
+    });
   }
 }
 
 async function resolveAssignee(group, login, db) {
   if (login === undefined || login === null || login === '') return undefined;
   const member = await shopping.findMember(group.id, login, db);
-  if (!member) throw new ApiError('BAD_REQUEST', { message: `"${login}" không phải thành viên của nhóm` });
+  if (!member) throw new ApiError('NOT_FOUND', { message: `"${login}" không phải thành viên của nhóm`, reason: 'assignee' });
   return member.id;
 }
 
@@ -103,7 +109,7 @@ export async function copyList(user, group, { listId, newName, date, assignToUse
     if (!source) throw listNotFound();
     const assignee = await resolveAssignee(group, assignToUsername, db);
     if (assignee !== undefined && assignee !== user.id && group.role !== 'leader') {
-      throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm được phân công cho người khác' });
+      throw new ApiError('FORBIDDEN', { message: 'Chỉ trưởng nhóm được phân công cho người khác', reason: 'assign' });
     }
     const keep = async (id) => (id && (await shopping.findMember(group.id, id, db)) ? id : undefined);
     const listAssignee = assignee ?? (await keep(source.assigned_to));
@@ -183,7 +189,10 @@ export async function updateTask(user, group, input) {
     const changesStock =
       !same(newFoodName, task.food_name) || (newQuantity !== undefined && newQuantity !== task.quantity) || !same(newUnit, task.unit_name);
     if (task.task_status === 'done' && changesStock && isDone !== false) {
-      throw new ApiError('CONFLICT', { message: 'Mặt hàng đã mua. Bỏ đánh dấu đã mua trước khi sửa món hoặc số lượng' });
+      throw new ApiError('CONFLICT', {
+        message: 'Mặt hàng đã mua. Bỏ đánh dấu đã mua trước khi sửa món hoặc số lượng',
+        reason: 'done',
+      });
     }
     if (isDone === false && task.task_status === 'done') await setTaskDone(user, group, { taskId: task.id, done: false }, db);
     let food = { id: task.food_id, name: task.food_name, unit_name: null, base_unit_id: null };

@@ -13,12 +13,12 @@ describe.skipIf(!hasDb)('Nhóm 1 + 2 · Xác thực và tài khoản', () => {
     expect(early.body.code).toBe('00044');
 
     const wrong = await call('post', '/user/verify-email/').send({ code: '000000', token: reg.body.data.token });
-    expect(wrong.body.code).toBe('INVALID_CODE');
+    expect(wrong.body.code).toBe('00054');
 
     await call('post', '/user/send-verification-code/').send({ email }).expect(200);
     const { verify_code: code } = await queryOne('SELECT verify_code FROM auth_local_accounts WHERE email = $1', [email]);
     const ok = await call('post', '/user/verify-email/').send({ code, token: reg.body.data.token });
-    expect(ok.body).toMatchObject({ code: '00000', data: { verified: true } });
+    expect(ok.body).toMatchObject({ code: '00058', data: { verified: true } });
 
     const login = await call('post', '/user/login/').send({ email, password: 'abc123', deviceId: 'fcm-token-1' });
     expect(login.status).toBe(200);
@@ -29,27 +29,27 @@ describe.skipIf(!hasDb)('Nhóm 1 + 2 · Xác thực và tài khoản', () => {
 
   it('đăng ký trùng email, mật khẩu ngắn, email sai', async () => {
     const u = await newUser();
-    expect((await call('post', '/user/').send({ email: u.email, password: 'abcdef' })).body.code).toBe('EMAIL_EXISTS');
+    expect((await call('post', '/user/').send({ email: u.email, password: 'abcdef' })).body.code).toBe('00032');
     const short = await call('post', '/user/').send({ email: 'x@test.local', password: '123' });
-    expect(short.body).toMatchObject({ code: '00279', message: expect.stringContaining('password') });
-    expect((await call('post', '/user/').send({ email: 'khong-phai-email', password: 'abcdef' })).body.code).toBe('00279');
+    expect(short.body).toMatchObject({ code: '00027', message: expect.stringContaining('password') });
+    expect((await call('post', '/user/').send({ email: 'khong-phai-email', password: 'abcdef' })).body.code).toBe('00026');
   });
 
   it('sai mật khẩu trả INVALID_CREDENTIALS', async () => {
     const u = await newUser();
     const res = await call('post', '/user/login/').send({ email: u.email, password: 'sai-roi' });
     expect(res.status).toBe(401);
-    expect(res.body.code).toBe('INVALID_CREDENTIALS');
+    expect(res.body.code).toBe('00045');
   });
 
   it('refresh token cấp token mới; logout làm token cũ hết hiệu lực', async () => {
     const u = await newUser();
     const r = await call('post', '/user/refresh-token/').send({ refreshToken: u.refreshToken });
     expect(r.body.data.accessToken).toBeTruthy();
-    expect((await call('post', '/user/refresh-token/').send({ refreshToken: 'rac' })).body.code).toBe('00281');
+    expect((await call('post', '/user/refresh-token/').send({ refreshToken: 'rac' })).body.code).toBe('00063');
 
     await call('post', '/user/logout/', r.body.data.accessToken).expect(200);
-    expect((await call('get', '/user/', r.body.data.accessToken)).body.code).toBe('00281');
+    expect((await call('get', '/user/', r.body.data.accessToken)).body.code).toBe('00012');
   });
 
   it('Get user, Edit user (JSON và form-data có ảnh)', async () => {
@@ -65,14 +65,14 @@ describe.skipIf(!hasDb)('Nhóm 1 + 2 · Xác thực và tài khoản', () => {
     expect(withImage.body.data.avatarUrl).toMatch(/\/it4788\/uploads\/avatars\/.+\.png$/);
 
     const bad = await call('put', '/user/', u.token).attach('image', Buffer.from('hello'), { filename: 'a.txt', contentType: 'text/plain' });
-    expect(bad.body.code).toBe('00279');
+    expect(bad.body.code).toBe('00900');
   });
 
   it('đổi mật khẩu: sai mật khẩu cũ bị từ chối; đổi xong token cũ hết hiệu lực', async () => {
     const u = await newUser();
-    expect((await call('post', '/user/change-password/', u.token).send({ oldPassword: 'sai', newPassword: 'moi123' })).body.code).toBe('WRONG_PASSWORD');
+    expect((await call('post', '/user/change-password/', u.token).send({ oldPassword: 'sai', newPassword: 'moi123' })).body.code).toBe('00072');
     await call('post', '/user/change-password/', u.token).send({ oldPassword: u.password, newPassword: 'moi123' }).expect(200);
-    expect((await call('get', '/user/', u.token)).body.code).toBe('00281');
+    expect((await call('get', '/user/', u.token)).body.code).toBe('00012');
     expect((await call('post', '/user/login/').send({ email: u.email, password: 'moi123' })).status).toBe(200);
   });
 
@@ -82,7 +82,7 @@ describe.skipIf(!hasDb)('Nhóm 1 + 2 · Xác thực và tài khoản', () => {
     expect(d.body.data).toMatchObject({ token: 'tok-xyz', platform: 'android' });
 
     await call('delete', '/user/', u.token).expect(200);
-    expect((await call('post', '/user/login/').send({ email: u.email, password: u.password })).body.code).toBe('INVALID_CREDENTIALS');
+    expect((await call('post', '/user/login/').send({ email: u.email, password: u.password })).body.code).toBe('00045');
     expect(await queryOne('SELECT 1 FROM device_tokens WHERE token = $1', ['tok-xyz'])).toBeNull();
   });
 });

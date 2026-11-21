@@ -42,7 +42,7 @@ export async function removeMember(user, group, { username }) {
   return withTransaction(async (db) => {
     const target = await users.findUserByLogin(username, db);
     if (!target) throw new ApiError('NOT_FOUND', { message: `Không tìm thấy người dùng "${username}"` });
-    if (target.id === user.id) throw new ApiError('FORBIDDEN', { message: 'Trưởng nhóm không thể tự xóa mình khỏi nhóm' });
+    if (target.id === user.id) throw new ApiError('FORBIDDEN', { message: 'Trưởng nhóm không thể tự xóa mình khỏi nhóm', reason: 'self' });
     const removed = await groups.markLeft(group.id, target.id, db);
     if (!removed) throw new ApiError('NOT_FOUND', { message: 'Người này không ở trong nhóm' });
     await groups.reassignOpenWork(group.id, target.id, user.id, db);

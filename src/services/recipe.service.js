@@ -74,7 +74,12 @@ async function findOwnRecipe(group, recipeId, db) {
   return recipe;
 }
 
+const RECIPE_CHANGES = ['newName', 'newHtmlContent', 'newDescription', 'newFoodName', 'newServings', 'newPrepMinutes', 'newCookMinutes', 'newIngredients'];
+
 export async function updateRecipe(group, input, file, req) {
+  if (!file && RECIPE_CHANGES.every((k) => input[k] === undefined)) {
+    throw new ApiError('BAD_REQUEST', { message: `Cần ít nhất một trong các trường: ${RECIPE_CHANGES.join(', ')}, image`, reason: 'need' });
+  }
   const imageUrl = file ? await storage().upload('recipes', file, req) : undefined;
   return withTransaction(async (db) => {
     const recipe = await findOwnRecipe(group, input.recipeId, db);

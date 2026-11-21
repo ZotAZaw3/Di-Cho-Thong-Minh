@@ -10,8 +10,8 @@ describe.skipIf(!hasDb)('Nhóm 8 · Mua sắm', () => {
 
     const doc = await call('post', '/shopping/', leader.token).send({ name: 'Chợ tối', assignToUsername: m1.username, date: '2099-05-01', note: 'mua sớm' });
     expect(doc.body.data).toMatchObject({ date: '2099-05-01', assignee: { id: m1.id }, note: 'mua sớm' });
-    expect((await call('post', '/shopping/', leader.token).send({ name: 'X', assignToUsername: 'nguoi-la' })).body.code).toBe('00279');
-    expect((await call('post', '/shopping/', leader.token).send({})).body.code).toBe('00279');
+    expect((await call('post', '/shopping/', leader.token).send({ name: 'X', assignToUsername: 'nguoi-la' })).body.code).toBe('00245');
+    expect((await call('post', '/shopping/', leader.token).send({})).body.code).toBe('00239');
   });
 
   it('Create tasks: mã 00287; trùng món thì rollback cả lô', async () => {
@@ -24,12 +24,12 @@ describe.skipIf(!hasDb)('Nhóm 8 · Mua sắm', () => {
     expect(res.body.data[0]).toMatchObject({ foodName: 'Trứng gà', quantity: 10, unitName: 'quả', completed: false, assignee: { id: m1.id } });
 
     const dup = await call('post', '/shopping/task/', leader.token).send({ listId: String(list.id), tasks: [{ foodName: 'Cam', quantity: 1 }, { foodName: 'Trứng gà', quantity: 1 }] });
-    expect(dup.body.code).toBe('CONFLICT');
+    expect(dup.body.code).toBe('00285');
     const tasks = await call('get', '/shopping/task/', leader.token).query({ listId: list.id });
     expect(tasks.body.data.map((t) => t.foodName)).toEqual(['Trứng gà', 'Thịt gà']);
 
     expect((await call('post', '/shopping/task/', leader.token).send({ listId: list.id, tasks: [] })).body.code).toBe('00279');
-    expect((await call('post', '/shopping/task/', leader.token).send({ listId: 999999, tasks: [{ foodName: 'Cam', quantity: 1 }] })).body.code).toBe('NOT_FOUND');
+    expect((await call('post', '/shopping/task/', leader.token).send({ listId: 999999, tasks: [{ foodName: 'Cam', quantity: 1 }] })).body.code).toBe('00283');
   });
 
   it('GET shopping/ trả danh sách kèm task (app đọc được)', async () => {
@@ -75,16 +75,16 @@ describe.skipIf(!hasDb)('Nhóm 8 · Mua sắm', () => {
 
     const upd = await call('put', '/shopping/task/', m1.token).send({ taskId: tasks[0].id, newFoodName: 'Chuối', newQuantity: '2' });
     expect(upd.body.data).toMatchObject({ foodName: 'Chuối', quantity: 2 });
-    expect((await call('put', '/shopping/task/', m1.token).send({ taskId: tasks[0].id, newFoodName: 'Táo' })).body.code).toBe('CONFLICT');
+    expect((await call('put', '/shopping/task/', m1.token).send({ taskId: tasks[0].id, newFoodName: 'Táo' })).body.code).toBe('00309');
 
     const moved = await call('put', '/shopping/', leader.token).send({ listId: list.id, newName: 'L2', newAssignToUsername: m2.username });
     expect(moved.body.data).toMatchObject({ name: 'L2', assignee: { id: m2.id } });
     expect(moved.body.data.tasks.every((t) => t.assignee.id === m2.id)).toBe(true);
 
-    expect((await call('delete', '/shopping/task/', m1.token).send({ taskId: tasks[1].id })).body.code).toBe('00284');
+    expect((await call('delete', '/shopping/task/', m1.token).send({ taskId: tasks[1].id })).body.code).toBe('00297');
     await call('delete', '/shopping/task/', leader.token).send({ taskId: tasks[1].id }).expect(200);
-    expect((await call('put', '/shopping/', m1.token).send({ listId: list.id, newName: 'X' })).body.code).toBe('00284');
+    expect((await call('put', '/shopping/', m1.token).send({ listId: list.id, newName: 'X' })).body.code).toBe('00261');
     await call('delete', '/shopping/', leader.token).send({ listId: list.id }).expect(200);
-    expect((await call('get', '/shopping/task/', leader.token).query({ listId: list.id })).body.code).toBe('NOT_FOUND');
+    expect((await call('get', '/shopping/task/', leader.token).query({ listId: list.id })).body.code).toBe('00904');
   });
 });

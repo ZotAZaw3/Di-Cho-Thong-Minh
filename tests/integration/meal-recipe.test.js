@@ -14,8 +14,8 @@ describe.skipIf(!hasDb)('Nhóm 9 · Bữa ăn', () => {
     const day = await call('get', '/meal/', leader.token).query({ date: '2099-03-01' });
     expect(day.body.data.map((m) => m.mealTypeCode)).toEqual(['lunch', 'dinner']);
 
-    expect((await call('post', '/meal/', leader.token).send({ date: '2099-03-01', mealType: 'lunch' })).body.code).toBe('00279');
-    expect((await call('post', '/meal/', leader.token).send({ mealName: 'X', mealType: 'bữa khuya' })).body.code).toBe('00279');
+    expect((await call('post', '/meal/', leader.token).send({ date: '2099-03-01', mealType: 'lunch' })).body.code).toBe('00313');
+    expect((await call('post', '/meal/', leader.token).send({ mealName: 'X', mealType: 'bữa khuya' })).body.code).toBe('00316');
   });
 
   it('sửa (đổi ngày, đổi bữa) và xóa', async () => {
@@ -25,7 +25,7 @@ describe.skipIf(!hasDb)('Nhóm 9 · Bữa ăn', () => {
     expect(upd.body.data).toMatchObject({ date: '2099-04-02', mealTypeCode: 'lunch', mealName: 'Cơm rang dưa bò' });
     expect((await call('get', '/meal/', leader.token).query({ date: '2099-04-01' })).body.data).toHaveLength(0);
     await call('delete', '/meal/', leader.token).send({ planId: m.planId }).expect(200);
-    expect((await call('delete', '/meal/', leader.token).send({ planId: m.planId })).body.code).toBe('NOT_FOUND');
+    expect((await call('delete', '/meal/', leader.token).send({ planId: m.planId })).body.code).toBe('00325');
   });
 });
 
@@ -50,10 +50,10 @@ describe.skipIf(!hasDb)('Nhóm 10 · Công thức + gợi ý món', () => {
     expect(upd.body.data).toMatchObject({ name: 'Gà luộc', htmlContent: '<p>Mới</p>' });
 
     const global = byFood.body.data.find((x) => x.isGlobal) ?? (await call('get', '/recipe/', leader.token)).body.data.find((x) => x.isGlobal);
-    expect((await call('delete', '/recipe/', leader.token).send({ recipeId: global.id })).body.code).toBe('00284');
+    expect((await call('delete', '/recipe/', leader.token).send({ recipeId: global.id })).body.code).toBe('00017');
     await call('delete', '/recipe/', leader.token).send({ recipeId: r.id }).expect(200);
     expect((await call('get', '/recipe/', leader.token).query({ foodId: chicken })).body.data.map((x) => x.id)).not.toContain(r.id);
-    expect((await call('post', '/recipe/', leader.token).send({ name: 'Thiếu nội dung' })).body.code).toBe('00279');
+    expect((await call('post', '/recipe/', leader.token).send({ name: 'Thiếu nội dung' })).body.code).toBe('00349');
   });
 
   it('gợi ý món: ưu tiên công thức có đủ nguyên liệu trong tủ', async () => {

@@ -15,7 +15,7 @@ async function resolveTarget(group, { foodName, recipeId }, db) {
   const out = {};
   if (foodName) out.foodId = (await resolveFood(group.id, { foodName }, db)).id;
   if (recipeId) {
-    if (!(await recipes.findRecipe(group.id, recipeId, db))) throw new ApiError('NOT_FOUND', { message: 'Không tìm thấy công thức' });
+    if (!(await recipes.findRecipe(group.id, recipeId, db))) throw new ApiError('NOT_FOUND', { message: 'Không tìm thấy công thức', reason: 'recipe' });
     out.recipeId = recipeId;
   }
   return out;
@@ -37,7 +37,7 @@ export async function getByDate(group, { date, from, to }) {
 export async function createPlan(user, group, input) {
   const { date, mealType, mealName, foodName, recipeId, servings, note } = input;
   if (!mealName && !foodName && !recipeId) {
-    throw new ApiError('BAD_REQUEST', { message: 'Cần foodName, recipeId hoặc tên món (mealName)' });
+    throw new ApiError('BAD_REQUEST', { message: 'Cần foodName, recipeId hoặc tên món (mealName)', reason: 'missing' });
   }
   return withTransaction(async (db) => {
     const target = await resolveTarget(group, { foodName, recipeId }, db);
@@ -56,6 +56,13 @@ export async function updatePlan(user, group, input) {
       date: newDate ?? input.date, mealType: newMealType ?? input.mealType ?? 'breakfast',
       mealName: newMealName ?? input.mealName, foodName: newFoodName ?? input.foodName,
       recipeId: newRecipeId ?? input.recipeId, servings: newServings, note: newNote,
+    });
+  }
+  const changes = [newFoodName, newRecipeId, newMealName, newMealType, newDate, newServings, newNote];
+  if (changes.every((v) => v === undefined)) {
+    throw new ApiError('BAD_REQUEST', {
+      message: 'Cần ít nhất một trong các trường: newFoodName, newRecipeId, newName, newMealType, newDate, newServings, newNote',
+      reason: 'need',
     });
   }
   return withTransaction(async (db) => {
@@ -96,7 +103,7 @@ export async function cookPlan(user, group, { planId, force = false, quantity, u
   return withTransaction(async (db) => {
     const item = await meals.findItem(group.id, planId, db, { lock: true });
     if (!item || item.item_status === 'cancelled') throw notFound();
-    if (item.item_status === 'cooked') throw new ApiError('CONFLICT', { message: 'Món này đã được đánh dấu nấu xong' });
+    if (item.item_status === 'cooked') throw new ApiError('CONFLICT', { message: 'Món này đã được đánh dấu nấu xong', reason: 'cooked' });
 
     const needs = [];
     if (item.recipe_id) {

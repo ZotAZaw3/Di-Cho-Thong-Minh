@@ -26,9 +26,9 @@ describe.skipIf(!hasDb)('Nhóm 6 · Thực phẩm', () => {
     expect(res.body.data.imageUrl).toContain('/uploads/foods/');
 
     const dup = await call('post', '/food/', a.leader.token).send({ name: 'chả lụa', categoryName: 'Thịt', unitName: 'kg' });
-    expect(dup.body.code).toBe('CONFLICT');
-    expect((await call('post', '/food/', a.leader.token).send({ name: 'Trứng gà', categoryName: 'Thịt', unitName: 'kg' })).body.code).toBe('CONFLICT');
-    expect((await call('post', '/food/', a.leader.token).send({ name: 'X', categoryName: 'Không có', unitName: 'kg' })).body.code).toBe('NOT_FOUND');
+    expect(dup.body.code).toBe('00151');
+    expect((await call('post', '/food/', a.leader.token).send({ name: 'Trứng gà', categoryName: 'Thịt', unitName: 'kg' })).body.code).toBe('00151');
+    expect((await call('post', '/food/', a.leader.token).send({ name: 'X', categoryName: 'Không có', unitName: 'kg' })).body.code).toBe('00155');
 
     const other = await call('get', '/food/', b.leader.token);
     expect(other.body.data.foods.map((f) => f.name)).not.toContain('Chả lụa');
@@ -39,9 +39,9 @@ describe.skipIf(!hasDb)('Nhóm 6 · Thực phẩm', () => {
     await call('post', '/food/', leader.token).send({ name: 'Nem chua', categoryName: 'Thịt', unitName: 'cái' });
     const upd = await call('put', '/food/', leader.token).send({ name: 'Nem chua', newName: 'Nem chua Thanh Hóa', newCategory: 'Khác' });
     expect(upd.body.data).toMatchObject({ name: 'Nem chua Thanh Hóa', categoryName: 'Khác' });
-    expect((await call('put', '/food/', leader.token).send({ name: 'Thịt bò', newName: 'Bò' })).body.code).toBe('00284');
+    expect((await call('put', '/food/', leader.token).send({ name: 'Thịt bò', newName: 'Bò' })).body.code).toBe('00167');
 
     await call('delete', '/food/', leader.token).send({ name: 'Nem chua Thanh Hóa' }).expect(200);
-    expect((await call('delete', '/food/', leader.token).send({ name: 'Nem chua Thanh Hóa' })).body.code).toBe('NOT_FOUND');
+    expect((await call('delete', '/food/', leader.token).send({ name: 'Nem chua Thanh Hóa' })).body.code).toBe('00180');
   });
 });

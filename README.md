@@ -104,7 +104,7 @@ chuyển trưởng nhóm, admin quản lý thực phẩm chung và cấu hình h
 
 - Thành công: `send(res, 'OK', data)`.
 - Lỗi nghiệp vụ: trong service `throw new ApiError('TEN_MA', { message })`; `errorHandler` chuyển thành response đúng format.
-- Mã response chỉ khai báo trong `src/utils/codes.js`. Mục `source: 'tmp'` là mã tạm, cần thay bằng mã trong tài liệu API.
+- Mã response chỉ khai báo trong `src/utils/codes.js`, theo bảng mã của file mô tả API môn học (mỗi API một dải mã riêng, tra theo route).
 
 ### Đổi schema
 

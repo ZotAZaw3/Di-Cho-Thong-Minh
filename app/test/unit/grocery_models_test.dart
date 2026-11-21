@@ -64,15 +64,28 @@ void main() {
   });
 
   group('API error messages', () {
-    test('maps known validation and authorization codes', () {
+    test('maps session and permission codes from the course API table', () {
       expect(
-        ApiException.fromCode(code: '00279', message: 'invalid').message,
-        'Thông tin gửi lên chưa hợp lệ. Vui lòng kiểm tra lại.',
+        ApiException.fromCode(code: '00011', message: 'expired').message,
+        'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
       );
       expect(
-        ApiException.fromCode(code: '00284', message: 'forbidden').message,
-        'Phiên đăng nhập không hợp lệ hoặc bạn không có quyền thực hiện.',
+        ApiException.fromCode(code: '00012', message: 'invalid').isSessionInvalid,
+        isTrue,
       );
+      expect(
+        ApiException.fromCode(code: '00019', message: 'forbidden').message,
+        'Bạn không có quyền thực hiện thao tác này.',
+      );
+    });
+
+    test('keeps the server message for per-API codes', () {
+      final error = ApiException.fromCode(
+        code: '00281',
+        message: 'Người dùng không phải là trưởng nhóm',
+      );
+      expect(error.message, 'Người dùng không phải là trưởng nhóm');
+      expect(error.isSessionInvalid, isFalse);
     });
   });
 }

@@ -7,7 +7,7 @@ export const updateList = async (req, res) => send(res, 'OK', await shopping.upd
 export const deleteList = async (req, res) => send(res, 'OK', await shopping.deleteList(req.user, req.group, req.valid));
 export const getLists = async (req, res) => send(res, 'OK', await shopping.getLists(req.user, req.group, req.valid));
 
-export const createTasks = async (req, res) => send(res, 'TASKS_CREATED', await shopping.createTasks(req.user, req.group, req.valid));
+export const createTasks = async (req, res) => send(res, 'CREATED', await shopping.createTasks(req.user, req.group, req.valid));
 export const getTasks = async (req, res) => send(res, 'OK', await shopping.getTasks(req.user, req.group, req.valid));
 export const deleteTask = async (req, res) => send(res, 'OK', await shopping.deleteTask(req.user, req.group, req.valid));
 export const updateTask = async (req, res) => send(res, 'OK', await shopping.updateTask(req.user, req.group, req.valid));

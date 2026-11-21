@@ -27,7 +27,7 @@ class AuthProvider extends ChangeNotifier {
         status = AuthStatus.authenticated;
       }
     } on ApiException catch (error) {
-      if (error.code == '00281' || error.code == '00284') {
+      if (error.isSessionInvalid) {
         await _repository.logout();
         status = AuthStatus.unauthenticated;
       } else {

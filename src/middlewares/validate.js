@@ -1,4 +1,5 @@
 import { ApiError } from '../utils/response.js';
+import { NEED_ONE } from '../models/common.js';
 
 /**
  * Kiểm tra req.body (hoặc req.query) bằng schema zod; kết quả đã chuẩn hóa đặt vào req.valid.
@@ -17,9 +18,18 @@ export const validate = (schema, source = 'body') => {
         field: i.path.join('.') || source,
         message: i.code === 'invalid_type' && missing(i.path) ? 'bắt buộc' : i.message,
       }));
+      const first = result.error.issues[0];
+      const field = String(first.path[0] ?? '');
+      // reasons chọn mã riêng của API theo tài liệu (src/utils/codes.js): trường lỗi, 'missing' khi thiếu,
+      // 'need' khi API sửa không có trường nào để sửa; '*' = mã chung của API.
+      let reasons;
+      if (field === NEED_ONE) reasons = ['need', 'missing'];
+      else if (missing(first.path.slice(0, 1))) reasons = [`missing:${field}`, 'missing', field];
+      else reasons = [field, 'missing'];
       throw new ApiError('BAD_REQUEST', {
-        message: `Trường "${errors[0].field}" ${errors[0].message}`,
+        message: field === NEED_ONE ? errors[0].message : `Trường "${errors[0].field}" ${errors[0].message}`,
         data: { errors },
+        reasons,
       });
     }
     req.valid = { ...(req.valid ?? {}), ...result.data };

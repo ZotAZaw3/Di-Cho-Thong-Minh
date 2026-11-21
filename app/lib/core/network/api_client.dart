@@ -118,7 +118,7 @@ class ApiClient {
       }
 
       final envelope = ApiEnvelope.fromJson(body);
-      if (!_isSuccess(envelope.code)) {
+      if (!_isSuccess(response.statusCode, envelope.code)) {
         throw ApiException.fromCode(
           code: envelope.code,
           message: envelope.message,
@@ -133,9 +133,12 @@ class ApiClient {
     }
   }
 
-  bool _isSuccess(String code) {
-    return const {'00287', '0', '200', '00000', 'SUCCESS'}
-        .contains(code.toUpperCase());
+  // Mỗi API có mã thành công riêng theo tài liệu môn học (00047 đăng nhập,
+  // 00287 thêm task...), nên dựa vào HTTP status: server trả 2xx khi thành công,
+  // 4xx/5xx khi lỗi (Dio ném lỗi, xử lý ở _toApiException).
+  bool _isSuccess(int? statusCode, String code) {
+    if (statusCode != null) return statusCode >= 200 && statusCode < 300;
+    return const {'0', '200', '00000', 'SUCCESS'}.contains(code.toUpperCase());
   }
 
   DioException _toDioException(DioException error) {

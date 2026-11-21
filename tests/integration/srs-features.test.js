@@ -42,8 +42,8 @@ describe.skipIf(!hasDb)('Tìm kiếm và phân loại thực phẩm', () => {
     await call('post', '/fridge/', leader.token).send({ foodName: 'Bánh bao', quantity: 2, unit: 'gói' });
     expect(await stock(leader.token, 'Bánh bao')).toBe(12);
     const bad = await call('post', '/food/', leader.token).send({ name: 'Bánh mì', categoryName: 'Khác', unitName: 'cái', units: [{ unitName: 'thùng', factor: 2 }] });
-    expect(bad.body.code).toBe('NOT_FOUND');
-    expect((await call('post', '/food/', leader.token).send({ name: 'Bánh tét', categoryName: 'Khác', unitName: 'cái', units: [{ unitName: 'gói', factor: 0 }] })).body.code).toBe('00279');
+    expect(bad.body.code).toBe('00153');
+    expect((await call('post', '/food/', leader.token).send({ name: 'Bánh tét', categoryName: 'Khác', unitName: 'cái', units: [{ unitName: 'gói', factor: 0 }] })).body.code).toBe('00147');
   });
 });
 
@@ -65,15 +65,15 @@ describe.skipIf(!hasDb)('Công thức yêu thích', () => {
     expect((await call('get', '/recipe/favorite/', m1.token)).body.data).toEqual([]);
 
     expect((await call('delete', '/recipe/favorite/', leader.token).query({ recipeId: id })).body.data).toEqual({ recipeId: id, isFavorite: false });
-    expect((await call('delete', '/recipe/favorite/', leader.token).send({ recipeId: id })).body.code).toBe('NOT_FOUND');
-    expect((await call('post', '/recipe/favorite/', leader.token).send({ recipeId: 999999 })).body.code).toBe('NOT_FOUND');
+    expect((await call('delete', '/recipe/favorite/', leader.token).send({ recipeId: id })).body.code).toBe('00904');
+    expect((await call('post', '/recipe/favorite/', leader.token).send({ recipeId: 999999 })).body.code).toBe('00904');
   });
 
   it('công thức của nhóm khác không thích được', async () => {
     const a = await newFamily();
     const b = await newFamily();
     const own = await call('post', '/recipe/', a.leader.token).send({ name: 'Món riêng', htmlContent: '<p>x</p>', foodName: 'Cam' });
-    expect((await call('post', '/recipe/favorite/', b.leader.token).send({ recipeId: own.body.data.id })).body.code).toBe('NOT_FOUND');
+    expect((await call('post', '/recipe/favorite/', b.leader.token).send({ recipeId: own.body.data.id })).body.code).toBe('00904');
   });
 });
 
@@ -96,7 +96,7 @@ describe.skipIf(!hasDb)('Danh sách mua sắm · dùng lại và phân công', (
     // Danh sách gốc giữ nguyên trạng thái.
     const original = (await call('get', '/shopping/task/', leader.token).query({ listId: list.id })).body.data;
     expect(original.find((t) => t.foodName === 'Trứng gà').completed).toBe(true);
-    expect((await call('post', '/shopping/copy/', leader.token).send({ listId: 999999 })).body.code).toBe('NOT_FOUND');
+    expect((await call('post', '/shopping/copy/', leader.token).send({ listId: 999999 })).body.code).toBe('00904');
   });
 
   it('danh sách đã lưu trữ không thêm món được', async () => {
@@ -104,7 +104,7 @@ describe.skipIf(!hasDb)('Danh sách mua sắm · dùng lại và phân công', (
     const list = (await call('post', '/shopping/', leader.token).send({ name: 'Cũ' })).body.data;
     await call('put', '/shopping/', leader.token).send({ listId: list.id, status: 'archived' });
     const res = await call('post', '/shopping/task/', leader.token).send({ listId: list.id, tasks: [{ foodName: 'Cam', quantity: 1 }] });
-    expect(res.body.code).toBe('CONFLICT');
+    expect(res.body.code).toBe('00909');
   });
 
   it('chỉ trưởng nhóm / người tạo danh sách giao việc cho người khác', async () => {
@@ -117,7 +117,7 @@ describe.skipIf(!hasDb)('Danh sách mua sắm · dùng lại và phân công', (
     const other = await call('post', '/shopping/task/', m1.token).send({ listId: list.id, tasks: [{ foodName: 'Táo', quantity: 1, assignToUsername: m2.username }] });
     expect(other.body.code).toBe('00284');
     const reassign = await call('put', '/shopping/task/', m1.token).send({ taskId: own.body.data[0].id, newAssignToUsername: m2.username });
-    expect(reassign.body.code).toBe('00284');
+    expect(reassign.body.code).toBe('00307');
     // Trưởng nhóm thì được.
     const byLeader = await call('put', '/shopping/task/', leader.token).send({ taskId: own.body.data[0].id, newAssignToUsername: m2.username });
     expect(byLeader.body.data.assignee.id).toBe(m2.id);
@@ -128,9 +128,9 @@ describe.skipIf(!hasDb)('Danh sách mua sắm · dùng lại và phân công', (
     const list = (await call('post', '/shopping/', leader.token).send({ name: 'L' })).body.data;
     const [task] = (await call('post', '/shopping/task/', leader.token).send({ listId: list.id, tasks: [{ foodName: 'Cam', quantity: 1 }] })).body.data;
     await call('put', '/shopping/task/done/', leader.token).send({ taskId: task.id });
-    expect((await call('put', '/shopping/task/', leader.token).send({ taskId: task.id, newQuantity: 3 })).body.code).toBe('CONFLICT');
+    expect((await call('put', '/shopping/task/', leader.token).send({ taskId: task.id, newQuantity: 3 })).body.code).toBe('00909');
     // Gửi lại đúng số cũ (app gửi cả form) thì vẫn được.
-    expect((await call('put', '/shopping/task/', leader.token).send({ taskId: task.id, newQuantity: 1, newNote: 'ok' })).body.code).toBe('00000');
+    expect((await call('put', '/shopping/task/', leader.token).send({ taskId: task.id, newQuantity: 1, newNote: 'ok' })).body.code).toBe('00312');
     // Bỏ đánh dấu và sửa trong cùng một lần gọi.
     const res = await call('put', '/shopping/task/', leader.token).send({ taskId: task.id, newQuantity: 3, isDone: false });
     expect(res.body.data).toMatchObject({ quantity: 3, completed: false });
@@ -145,7 +145,7 @@ describe.skipIf(!hasDb)('Nhóm gia đình · rời nhóm, chuyển trưởng nh�
     await call('post', '/shopping/task/', leader.token).send({ listId: list.id, tasks: [{ foodName: 'Cam', quantity: 1 }] });
 
     expect((await call('post', '/user/group/leave/', m1.token)).body.code).toBe('00000');
-    expect((await call('get', '/user/group/', m1.token)).body.code).toBe('NO_GROUP');
+    expect((await call('get', '/user/group/', m1.token)).body.code).toBe('00096');
     const tasks = (await call('get', '/shopping/task/', leader.token).query({ listId: list.id })).body.data;
     expect(tasks[0].assignee.id).toBe(leader.id);
     expect((await call('get', '/shopping/', leader.token)).body.data[0].assignee.id).toBe(leader.id);
@@ -154,12 +154,12 @@ describe.skipIf(!hasDb)('Nhóm gia đình · rời nhóm, chuyển trưởng nh�
   it('chuyển quyền trưởng nhóm; trưởng nhóm rời đi một mình thì nhóm được lưu trữ', async () => {
     const { leader, members: [m1], groupId } = await newFamily(1);
     const outsider = await newUser();
-    expect((await call('put', '/user/group/leader/', leader.token).send({ username: outsider.username })).body.code).toBe('NOT_FOUND');
-    expect((await call('put', '/user/group/leader/', leader.token).send({ username: leader.username })).body.code).toBe('00279');
+    expect((await call('put', '/user/group/leader/', leader.token).send({ username: outsider.username })).body.code).toBe('00904');
+    expect((await call('put', '/user/group/leader/', leader.token).send({ username: leader.username })).body.code).toBe('00900');
     const res = await call('put', '/user/group/leader/', leader.token).send({ username: m1.username });
     expect(res.body.data.members.find((m) => m.id === m1.id).role).toMatch(/leader|Trưởng/i);
     // Người cũ giờ là thành viên: không thêm người được nữa.
-    expect((await call('post', '/user/group/add/', leader.token).send({ username: outsider.username })).body.code).toBe('00284');
+    expect((await call('post', '/user/group/add/', leader.token).send({ username: outsider.username })).body.code).toBe('00101');
 
     await call('post', '/user/group/leave/', leader.token);
     await call('post', '/user/group/leave/', m1.token);
@@ -179,7 +179,7 @@ describe.skipIf(!hasDb)('Bữa ăn · nấu từ đồ trong tủ, xem theo tu�
 
     // Công thức cho 2 người, nấu 4 người: cần 6 trứng, 0.4 kg cà chua; hành lá là tùy chọn nên không tính thiếu.
     const short = await call('post', '/meal/cook/', leader.token).send({ planId: meal.id });
-    expect(short.body.code).toBe('00279');
+    expect(short.body.code).toBe('00900');
     expect(short.body.data.missing).toEqual([{ foodName: 'Cà chua', unitName: 'kg', need: 0.4, have: 0.1 }]);
     expect(await stock(leader.token, 'Trứng gà')).toBe(8);
 
@@ -192,11 +192,11 @@ describe.skipIf(!hasDb)('Bữa ăn · nấu từ đồ trong tủ, xem theo tu�
     expect(eggs[0].id).not.toBe(soon.id);
     expect(await stock(leader.token, 'Cà chua')).toBe(0);
 
-    expect((await call('post', '/meal/cook/', leader.token).send({ planId: meal.id })).body.code).toBe('CONFLICT');
+    expect((await call('post', '/meal/cook/', leader.token).send({ planId: meal.id })).body.code).toBe('00909');
     const report = (await call('get', '/report/', leader.token)).body.data;
     expect(report.foods.find((f) => f.foodName === 'Trứng gà').consumed).toBe(6);
     // Xóa món đã nấu: giữ lịch sử tiêu thụ, chỉ hủy.
-    expect((await call('delete', '/meal/', leader.token).send({ planId: meal.id })).body.code).toBe('00000');
+    expect((await call('delete', '/meal/', leader.token).send({ planId: meal.id })).body.code).toBe('00330');
     expect((await queryOne('SELECT item_status FROM meal_plan_items WHERE id = $1', [meal.id])).item_status).toBe('cancelled');
   });
 
@@ -215,9 +215,9 @@ describe.skipIf(!hasDb)('Bữa ăn · nấu từ đồ trong tủ, xem theo tu�
     await call('post', '/meal/', leader.token).send({ mealName: 'Cơm', date: '2099-03-06', mealType: 'tối' });
     const week = await call('get', '/meal/', leader.token).query({ from: '2099-03-02', to: '2099-03-08' });
     expect(week.body.data.map((m) => m.mealName)).toEqual(['Phở', 'Cơm']);
-    expect((await call('get', '/meal/', leader.token).query({ from: '2099-03-08', to: '2099-03-02' })).body.code).toBe('00279');
-    expect((await call('get', '/meal/', leader.token).query({ from: '2099-01-01', to: '2099-12-31' })).body.code).toBe('00279');
-    expect((await call('get', '/report/', leader.token).query({ from: '2099-03-08', to: '2099-03-02' })).body.code).toBe('00279');
+    expect((await call('get', '/meal/', leader.token).query({ from: '2099-03-08', to: '2099-03-02' })).body.code).toBe('00900');
+    expect((await call('get', '/meal/', leader.token).query({ from: '2099-01-01', to: '2099-12-31' })).body.code).toBe('00900');
+    expect((await call('get', '/report/', leader.token).query({ from: '2099-03-08', to: '2099-03-02' })).body.code).toBe('00900');
   });
 });
 
@@ -273,13 +273,13 @@ describe.skipIf(!hasDb)('Quản trị · danh mục thực phẩm chung và cấ
 
     const seen = (await call('get', '/food/', leader.token).query({ q: name })).body.data.foods;
     expect(seen).toEqual([expect.objectContaining({ name, isGlobal: true })]);
-    expect((await call('put', '/food/', leader.token).send({ name, newName: 'X' })).body.code).toBe('00284');
-    expect((await call('post', '/food/', leader.token).send({ name, categoryName: 'Rau củ', unitName: 'kg' })).body.code).toBe('CONFLICT');
+    expect((await call('put', '/food/', leader.token).send({ name, newName: 'X' })).body.code).toBe('00167');
+    expect((await call('post', '/food/', leader.token).send({ name, categoryName: 'Rau củ', unitName: 'kg' })).body.code).toBe('00151');
 
     const upd = await call('put', '/admin/food/', admin.token).send({ name, newCategory: 'Khác' });
     expect(upd.body.data.categoryName).toBe('Khác');
     expect((await call('get', '/admin/food/', admin.token).query({ q: name })).body.data).toHaveLength(1);
-    expect((await call('post', '/admin/food/', admin.token).send({ name, categoryName: 'Khác', unitName: 'kg' })).body.code).toBe('CONFLICT');
+    expect((await call('post', '/admin/food/', admin.token).send({ name, categoryName: 'Khác', unitName: 'kg' })).body.code).toBe('00909');
     expect((await call('delete', '/admin/food/', admin.token).send({ name })).body.code).toBe('00000');
     expect((await call('get', '/food/', leader.token).query({ q: name })).body.data.foods).toEqual([]);
     expect((await call('get', '/admin/food/', leader.token)).body.code).toBe('00019');
@@ -293,13 +293,59 @@ describe.skipIf(!hasDb)('Quản trị · danh mục thực phẩm chung và cấ
     const upd = await call('put', '/admin/config/', admin.token).send({ expiryDays: 5, suggest_limit: '4' });
     expect(upd.body.data.find((c) => c.key === 'expiry_days')).toMatchObject({ value: 5, isDefault: false });
     expect(upd.body.data.find((c) => c.key === 'suggest_limit').value).toBe(4);
-    expect((await call('put', '/admin/config/', admin.token).send({ key: 'expiry_days', value: 99 })).body.code).toBe('00279');
-    expect((await call('put', '/admin/config/', admin.token).send({ khongCo: 1 })).body.code).toBe('00279');
-    expect((await call('put', '/admin/config/', admin.token).send({})).body.code).toBe('00279');
+    expect((await call('put', '/admin/config/', admin.token).send({ key: 'expiry_days', value: 99 })).body.code).toBe('00900');
+    expect((await call('put', '/admin/config/', admin.token).send({ khongCo: 1 })).body.code).toBe('00900');
+    expect((await call('put', '/admin/config/', admin.token).send({})).body.code).toBe('00900');
 
     const reset = await call('put', '/admin/config/', admin.token).send({ expiryDays: null, suggestLimit: null });
     expect(reset.body.data.find((c) => c.key === 'expiry_days')).toMatchObject({ value: 3, isDefault: true });
     const user = await newUser();
     expect((await call('put', '/admin/config/', user.token).send({ expiryDays: 1 })).body.code).toBe('00019');
+  });
+});
+
+describe.skipIf(!hasDb)('Mã response theo tài liệu môn học', () => {
+  it('mã thành công riêng của từng API', async () => {
+    const { leader } = await newFamily();
+    expect((await call('get', '/user/', leader.token)).body.code).toBe('00089');
+    expect((await call('get', '/fridge/', leader.token)).body.code).toBe('00228');
+    expect((await call('get', '/food/', leader.token)).body.code).toBe('00188');
+    expect((await call('get', '/meal/', leader.token)).body.code).toBe('00348');
+    const list = await call('post', '/shopping/', leader.token).send({ name: 'L' });
+    expect(list.body).toMatchObject({ code: '00249', message: 'Tạo danh sách mua sắm thành công' });
+  });
+
+  it('API sửa không có trường nào để sửa: 00163, 00204, 00252, 00302, 00333', async () => {
+    const { leader } = await newFamily();
+    const food = await call('post', '/food/', leader.token).send({ name: `Món ${Date.now()}`, categoryName: 'Khác', unitName: 'cái' });
+    expect((await call('put', '/food/', leader.token).send({ name: food.body.data.name })).body.code).toBe('00163');
+    expect((await call('put', '/fridge/', leader.token).send({ itemId: 1 })).body.code).toBe('00204');
+    const list = (await call('post', '/shopping/', leader.token).send({ name: 'L' })).body.data;
+    expect((await call('put', '/shopping/', leader.token).send({ listId: list.id })).body.code).toBe('00252');
+    expect((await call('put', '/shopping/task/', leader.token).send({ taskId: 1 })).body.code).toBe('00302');
+    const meal = (await call('post', '/meal/', leader.token).send({ mealName: 'Cơm', mealType: 'lunch' })).body.data;
+    expect((await call('put', '/meal/', leader.token).send({ planId: meal.id })).body.code).toBe('00333');
+    const recipe = (await call('post', '/recipe/', leader.token).send({ name: 'R', htmlContent: '<p>x</p>' })).body.data;
+    expect((await call('put', '/recipe/', leader.token).send({ recipeId: recipe.id })).body.code).toBe('00360');
+  });
+
+  it('tên mới trùng tên cũ (00137, 00118); mật khẩu mới trùng mật khẩu cũ (00073)', async () => {
+    const admin = await newUser({ role: 'admin' });
+    expect((await call('put', '/admin/category/', admin.token).send({ oldName: 'Thịt', newName: 'Thịt' })).body.code).toBe('00137');
+    expect((await call('put', '/admin/unit/', admin.token).send({ oldName: 'kg', newName: 'kg' })).body.code).toBe('00118');
+    const res = await call('post', '/user/change-password/', admin.token).send({ oldPassword: admin.password, newPassword: admin.password });
+    expect(res.body.code).toBe('00073');
+  });
+
+  it('refresh token hết hạn 00062; token xác minh email sai 00055; Create tasks thiếu mảng 00278, mảng sai 00279', async () => {
+    const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+    const expired = `${b64({ alg: 'HS256' })}.${b64({ sub: 'x', exp: 1 })}.sig`;
+    expect((await call('post', '/user/refresh-token/').send({ refreshToken: expired })).body.code).toBe('00062');
+    expect((await call('post', '/user/verify-email/').send({ code: '123456', token: 'rac' })).body.code).toBe('00055');
+    const { leader } = await newFamily();
+    const list = (await call('post', '/shopping/', leader.token).send({ name: 'L' })).body.data;
+    expect((await call('post', '/shopping/task/', leader.token).send({ listId: list.id })).body.code).toBe('00278');
+    expect((await call('post', '/shopping/task/', leader.token).send({ listId: list.id, tasks: [{ quantity: 1 }] })).body.code).toBe('00279');
+    expect((await call('post', '/shopping/task/', leader.token).send({ tasks: [] })).body.code).toBe('00277');
   });
 });
