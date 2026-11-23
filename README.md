@@ -9,37 +9,131 @@ token tự lưu) hoặc import thẳng `http://localhost:3000/it4788/openapi.jso
 `npm run docs:export` (thêm URL server thật làm tham số khi deploy), nên luôn khớp với route và schema.
 
 Thư mục [`app/`](app/) là app Flutter lấy từ nhánh `fe-tien` trên GitLab, đã trỏ sẵn về backend này.
+Cách chạy cả hai trên máy: mục [Chạy local](#chạy-local).
 
-## Chạy local (không cần Supabase)
+## Chạy local
 
-Cần Node 22 và một Postgres (cài sẵn, hoặc `docker compose --profile local up -d db`).
+Chạy cả backend lẫn app trên một máy, không cần Supabase hay Firebase: dữ liệu nằm trong Postgres trên máy, đăng nhập
+dùng `AUTH_DRIVER=local`, ảnh lưu vào thư mục `uploads/`, thông báo chỉ in ra log. Lệnh dưới đây chạy được trên
+Windows (PowerShell), macOS và Linux; chỗ nào khác nhau có ghi rõ.
+
+### 1. Cài công cụ
+
+| Công cụ | Bản | Ghi chú |
+| --- | --- | --- |
+| Git | bất kỳ | |
+| Node.js | 22 | <https://nodejs.org> (bản LTS 22) hoặc `nvm install 22`. Kiểm tra: `node -v` ra `v22...` |
+| PostgreSQL | 16 (14 trở lên đều được) | Chọn **một** trong hai: cài bản Windows/macOS từ <https://www.postgresql.org/download/> (nhớ mật khẩu user `postgres`), hoặc chạy bằng Docker Desktop (bước 3) |
+| Flutter | 3.19 trở lên | Chỉ cần khi chạy app. `flutter doctor` để kiểm tra |
+
+### 2. Lấy code và cài thư viện backend
 
 ```bash
-nvm use                  # Node 22
+git clone https://github.com/ZotAZaw3/Di-Cho-Thong-Minh.git
+cd Di-Cho-Thong-Minh
 npm install
-cp .env.example .env     # điền DATABASE_URL, ví dụ postgresql://postgres:postgres@localhost:5432/dicho
-npm run db:setup         # tạo bảng + dữ liệu mẫu + tài khoản demo
-npm run dev              # http://localhost:3000/it4788, tự reload khi sửa code
 ```
 
-Tài khoản demo (mật khẩu `123456`): `demo@dicho.local` (trưởng nhóm "Gia đình Demo", đã có đồ trong tủ, danh sách đi chợ,
-bữa ăn), `minh@dicho.local` (thành viên), `admin@dicho.local` (admin).
+### 3. Tạo database
 
-Ở chế độ `AUTH_DRIVER=local`, mã xác minh email được in ra log của server thay vì gửi mail.
-Từ emulator Android gọi `http://10.0.2.2:3000/it4788/`.
+Cách A, dùng Docker (không phải cài Postgres):
+
+```bash
+docker compose --profile local up -d db     # Postgres 16, user postgres / mật khẩu postgres, đã có sẵn DB "dicho"
+```
+
+Cách B, Postgres cài trên máy: tạo DB tên `dicho` bằng pgAdmin, hoặc
+
+```bash
+psql -U postgres -c "CREATE DATABASE dicho"
+```
+
+### 4. Tạo file `.env`
+
+```bash
+cp .env.example .env          # Windows PowerShell: Copy-Item .env.example .env
+```
+
+Mở `.env`, điền đúng một dòng (đổi `postgres:postgres` thành `postgres:<mật khẩu của bạn>` nếu dùng cách B):
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dicho
+```
+
+Các dòng khác để nguyên. Không commit file `.env`.
+
+### 5. Tạo bảng, dữ liệu mẫu và chạy server
+
+```bash
+npm run db:setup     # tạo bảng + danh mục thực phẩm, đơn vị, công thức + 3 tài khoản demo
+npm run dev          # chạy server, tự reload khi sửa code
+```
+
+Thấy `API chạy tại http://localhost:3000/it4788` là xong. Kiểm tra:
+
+- <http://localhost:3000/it4788/health> trả `{"code":"00000",...}`.
+- <http://localhost:3000/it4788/docs>: Swagger UI, gọi thử mọi API. Chạy `#1 Đăng nhập` với tài khoản demo, copy
+  `accessToken` vào nút **Authorize**.
+- Postman: import `docs/postman_collection.json`, chạy `#1 Đăng nhập` trước, token tự lưu.
+
+Tài khoản demo (mật khẩu `123456`):
+
+| Email | Vai trò |
+| --- | --- |
+| `demo@dicho.local` | Trưởng nhóm "Gia đình Demo", đã có đồ trong tủ lạnh, danh sách đi chợ, bữa ăn |
+| `minh@dicho.local` | Thành viên cùng nhóm |
+| `admin@dicho.local` | Quản trị viên (API `admin/`) |
+
+Đăng ký tài khoản mới: mã xác minh 6 số được in ra cửa sổ chạy server (`[auth:local] Mã xác minh cho ...`), không gửi
+mail. Muốn bỏ bước xác minh thì đặt `LOCAL_AUTO_CONFIRM=true` trong `.env`.
+
+### 6. Chạy app Flutter
+
+Mở terminal thứ hai ở thư mục gốc của repo, để server ở bước 5 vẫn chạy:
+
+```bash
+cd app
+flutter pub get
+```
+
+Repo chưa có thư mục `android/`, `ios/`. Lần đầu chạy trên Android thì tạo bằng
+`flutter create --project-name smart_grocery --platforms android .` (chỉ thêm file mới, không đụng code trong `lib/`).
+
+| Chạy trên | Lệnh | App gọi tới |
+| --- | --- | --- |
+| Chrome / Edge | `flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000/it4788` | máy đang chạy |
+| Android Emulator | `flutter run` | `http://10.0.2.2:3000/it4788` (mặc định, 10.0.2.2 là máy chủ của emulator) |
+| Điện thoại thật (cùng Wi-Fi) | `flutter run --dart-define=API_BASE_URL=http://<IP máy tính>:3000/it4788` | IP LAN của máy chạy server (`ipconfig` / `ifconfig`) |
+
+Đăng nhập bằng `demo@dicho.local` / `123456`.
+
+### Lỗi hay gặp
+
+| Hiện tượng | Cách sửa |
+| --- | --- |
+| `Thiếu DATABASE_URL` khi chạy server | Chưa có file `.env` hoặc chưa điền `DATABASE_URL` (bước 4) |
+| `password authentication failed for user "postgres"` | Mật khẩu trong `DATABASE_URL` sai |
+| `database "dicho" does not exist` | Chưa tạo DB (bước 3) |
+| `ECONNREFUSED 127.0.0.1:5432` | Postgres chưa chạy: mở service PostgreSQL, hoặc `docker compose --profile local up -d db` |
+| `EADDRINUSE :3000` | Cổng 3000 đang bị dùng: đặt `PORT=3001` trong `.env` (và đổi URL của app theo) |
+| App báo "Không thể kết nối máy chủ" | Server chưa chạy, hoặc sai `API_BASE_URL` (emulator phải dùng `10.0.2.2`, điện thoại phải dùng IP LAN và tường lửa Windows cho phép Node.js) |
+| Android chặn HTTP (cleartext) | Thêm `android:usesCleartextTraffic="true"` vào thẻ `<application>` trong `android/app/src/main/AndroidManifest.xml` |
+| Muốn làm lại dữ liệu từ đầu | Xóa và tạo lại DB `dicho`, rồi `npm run db:setup` |
+
+### Lệnh khác
 
 | Lệnh | Việc |
 | --- | --- |
 | `npm run dev` | Chạy server, tự reload |
-| `npm run db:migrate` | Áp migration mới (`-- --status` để xem) |
+| `npm start` | Chạy server không reload |
+| `npm run db:migrate` | Áp migration mới (`npm run db:migrate -- --status` để xem) |
 | `npm run db:seed` | Seed danh mục chung (`-- --demo` thêm tài khoản demo) |
 | `npm test` | Test (vitest + supertest). Có `TEST_DATABASE_URL` thì chạy cả test tích hợp trên Postgres thật |
 | `npm run lint` | ESLint |
 | `npm run docs:export` | Ghi lại `docs/openapi.json` + `docs/postman_collection.json` |
-| `docker compose up -d --build` | Chạy bằng Docker như trên VPS |
 
-Chạy test tích hợp: tạo DB tên có chữ `test` (script xóa sạch schema của DB đó), rồi
-`TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dicho_test npm test`.
+Chạy test tích hợp: tạo DB tên có chữ `test` (script xóa sạch schema của DB đó), rồi đặt
+`TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dicho_test` và chạy `npm test`.
 
 ## Chạy thật với Supabase
 
@@ -115,5 +209,5 @@ Thêm file `db/migrations/NNNN_ten.sql` (số tiếp theo), chạy `npm run db:m
 - Nhánh: `feat/<mã task>-<tên ngắn>`, ví dụ `feat/T04.2-group-api`. Không push thẳng vào `main`; merge qua PR.
 - Commit theo Conventional Commits: `feat(group): add member`, `fix(auth): ...`.
 - CI (lint + test với Postgres) chạy cho mọi PR.
-- Repo nộp bài trên GitLab (`nhom-4/da-nen-tang`) chỉ nhận bản đã chốt: gắn tag trên `main` rồi đưa vào thư mục `server/` của GitLab khi trưởng nhóm backend đồng ý.
+- Repo nộp bài trên GitLab (`nhom-4/da-nen-tang`) chỉ nhận bản đã chốt: backend nằm trong thư mục `server/`, app Flutter ở thư mục gốc (nhánh `be-long`, dựng trên `fe-tien`). Chỉ đưa lên khi trưởng nhóm backend đồng ý.
 - Không commit `.env`, service role key, file service account Firebase.

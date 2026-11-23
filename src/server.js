@@ -3,6 +3,11 @@ import { env } from './config/env.js';
 import { closePool } from './config/db.js';
 import { startJobs } from './jobs/index.js';
 
+if (!env.DATABASE_URL) {
+  console.error('Thiếu DATABASE_URL: copy .env.example thành .env rồi điền chuỗi kết nối Postgres (xem README, "Chạy local").');
+  process.exit(1);
+}
+
 const app = createApp();
 const server = app.listen(env.PORT, () => {
   console.log(`API chạy tại http://localhost:${env.PORT}${env.API_PREFIX} (auth: ${env.AUTH_DRIVER}, storage: ${env.STORAGE_DRIVER}, push: ${env.PUSH_DRIVER})`);

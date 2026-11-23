@@ -6,28 +6,19 @@ header `Authorization: Bearer ...` cho các request cần đăng nhập.
 
 ## Chạy ứng dụng
 
-Web preview đã được cấu hình. Có thể dùng **Xem thử không cần đăng nhập** hoặc
-**Đăng ký** để khám phá các màn hình bằng dữ liệu mẫu mà không cần backend.
+Có thể dùng **Xem thử không cần đăng nhập** để xem các màn hình bằng dữ liệu mẫu mà không cần backend.
 
-Đăng nhập thật cần backend trong thư mục gốc của repo này (xem `../README.md`).
-Chạy backend ở chế độ local rồi đăng nhập bằng tài khoản demo `demo@dicho.local` /
-`123456`:
+Đăng nhập thật cần backend chạy trên máy: làm theo mục "Chạy local" trong [README của backend](../README.md#chạy-local)
+(cài Postgres, `npm run db:setup`, `npm run dev`), rồi ở thư mục này:
 
 ```bash
-# ở thư mục gốc repo
-npm install && cp .env.example .env   # điền DATABASE_URL
-npm run db:setup && npm run dev       # http://localhost:3000/it4788
-
-# ở thư mục app/
 flutter pub get
-flutter run                                                     # Android Emulator: mặc định http://10.0.2.2:3000/it4788
-flutter run -d edge --dart-define=API_BASE_URL=http://localhost:3000/it4788
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000/it4788   # web
+flutter run                                                                      # Android Emulator: http://10.0.2.2:3000/it4788
 ```
 
-Trên thiết bị thật, thay `localhost` bằng IP máy chạy backend (cùng Wi-Fi) hoặc
-URL HTTPS của VPS. Để tạo cấu hình native lần đầu, chạy
-`flutter create --project-name smart_grocery --platforms android,ios .` rồi cài
-Android SDK nếu phát triển trên Android.
+Tài khoản demo: `demo@dicho.local` / `123456`. Điện thoại thật: thay `localhost` bằng IP LAN của máy chạy backend.
+Lần đầu chạy Android: `flutter create --project-name smart_grocery --platforms android .` để tạo thư mục `android/`.
 
 ## API được gọi
 
@@ -38,9 +29,9 @@ Android SDK nếu phát triển trên Android.
 - `GET /meal/`, cập nhật qua `PUT /meal/`
 - `GET /recipe/`, xóa qua `DELETE /recipe/`
 
-Các request đều xử lý envelope `{ "code", "message", "data" }`; backend trả `00000`
-khi thành công (riêng Create tasks trả `00287`). Mã `00279`, `00281` và `00284` được chuyển thành thông báo phù hợp
-trên giao diện.
+Các request đều xử lý envelope `{ "code", "message", "data" }`. Mỗi API có mã thành công riêng theo tài liệu
+môn học (vd. `00047` đăng nhập, `00287` thêm task), nên app coi HTTP 2xx là thành công. `00006`/`00011`/`00012`
+(thiếu token, token hết hạn, token sai) là phiên không hợp lệ; các mã lỗi khác hiển thị message của server.
 
 ## Giả định payload cần đối chiếu với backend
 

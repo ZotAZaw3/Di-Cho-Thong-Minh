@@ -70,7 +70,9 @@ const schema = z
     }
   });
 
-const parsed = schema.safeParse(process.env);
+// Dòng để trống trong .env (vd. `JWT_SECRET=` như .env.example) coi như chưa đặt, để dùng giá trị mặc định.
+const raw = Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== ''));
+const parsed = schema.safeParse(raw);
 if (!parsed.success) {
   console.error('Biến môi trường không hợp lệ:', z.prettifyError(parsed.error));
   process.exit(1);
