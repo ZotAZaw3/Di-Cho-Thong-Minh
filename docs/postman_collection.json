@@ -1,0 +1,3398 @@
+{
+  "info": {
+    "name": "Đi chợ tiện lợi API (IT4788, nhóm 4)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Sinh tự động từ code (npm run docs:export). Chạy \"Đăng nhập\" trước: token được lưu vào biến accessToken."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/it4788"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Hệ thống",
+      "item": [
+        {
+          "name": "#0 Kiểm tra server",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1. Xác thực",
+      "item": [
+        {
+          "name": "#1 Đăng nhập",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/login/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00047` | Thành công |\n| `00038` | Thiếu trường bắt buộc |\n| `00039` | Trường `email` sai |\n| `00040` | Trường `password` sai |\n| `00044` | Email chưa xác minh |\n| `00045` | Sai email hoặc mật khẩu |",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@dicho.local\",\n  \"password\": \"123456\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) { pm.collectionVariables.set('accessToken', data.accessToken); pm.collectionVariables.set('refreshToken', data.refreshToken); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#2 Đăng ký (gửi mã xác minh email)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00035` | Thành công |\n| `00025` | Thiếu trường bắt buộc |\n| `00026` | Trường `email` sai |\n| `00027` | Trường `password` sai |\n| `00028` | Trường `name` sai |\n| `00032` | Email đã tồn tại |",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ban@example.com\",\n  \"password\": \"123456\",\n  \"name\": \"Nguyễn Văn A\",\n  \"username\": \"nguyenvana\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#3 Đăng xuất",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/logout/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "logout",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00050` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#4 Làm mới access token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/refresh-token/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "refresh-token",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00065` | Thành công |\n| `00059` | Thiếu trường bắt buộc |\n| `00059` | Trường `refreshToken` sai |\n| `00062` | Token hết hạn |\n| `00063` | Token không hợp lệ |",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#5 Gửi lại mã xác minh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/send-verification-code/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "send-verification-code",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00048` | Thành công |\n| `00005` | Thiếu trường bắt buộc |\n| `00005` | Trường `email` sai |",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ban@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#6 Xác minh email bằng mã 6 số",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/verify-email/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "verify-email",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Mã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00058` | Thành công |\n| `00053` | Thiếu trường bắt buộc |\n| `00054` | Trường `code` sai |\n| `00054` | Mã xác minh sai |\n| `00055` | Token xác minh sai |",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ban@example.com\",\n  \"code\": \"123456\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Tài khoản",
+      "item": [
+        {
+          "name": "#7 Đổi mật khẩu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/change-password/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "change-password",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00076` | Thành công |\n| `00069` | Thiếu trường bắt buộc |\n| `00069` | Trường `oldPassword` sai |\n| `00069` | Trường `newPassword` sai |\n| `00072` | Mật khẩu cũ sai |\n| `00073` | Giá trị mới trùng giá trị cũ |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"123456\",\n  \"newPassword\": \"1234567\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#8 Sửa thông tin cá nhân (form-data, ảnh ở trường image)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00086` | Thành công |\n| `00077` | Trường `name` sai |\n| `00079` | Trường `language` sai |\n| `00081` | Trường `username` sai |\n| `00084` | Username đã tồn tại |",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#13 Thông tin người dùng hiện tại",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00089` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#14 Xóa tài khoản",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00092` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#50 Đăng ký FCM token của thiết bị",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/device/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "device",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm-token-cua-may\",\n  \"platform\": \"android\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Nhóm gia đình",
+      "item": [
+        {
+          "name": "#9 Tạo nhóm (người tạo là trưởng nhóm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00095` | Thành công |\n| `00093` | Đã ở trong một nhóm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gia đình tôi\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#10 Thêm thành viên",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/add/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                "add",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00102` | Thành công |\n| `00099` | Đã ở trong một nhóm |\n| `00099` | Không tìm thấy |\n| `00100` | Thiếu trường bắt buộc |\n| `00100` | Trường `username` sai |\n| `00101` | Không có quyền |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"minh@dicho.local\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#11 Xóa thành viên",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00106` | Thành công |\n| `00103` | Không tìm thấy |\n| `00104` | Không có quyền |\n| `00107` | Thiếu trường bắt buộc |\n| `00107` | Trường `username` sai | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#12 Xem nhóm và thành viên",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00098` | Thành công |\n| `00096` | Chưa vào nhóm |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#61 Rời nhóm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/leave/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                "leave",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#62 Chuyển quyền trưởng nhóm",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/group/leader/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "group",
+                "leader",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Chỉ trưởng nhóm.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"minh@dicho.local\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4, 5. Admin",
+      "item": [
+        {
+          "name": "#15 Tạo category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/category/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "category",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00135` | Thành công |\n| `00131` | Thiếu trường bắt buộc |\n| `00131` | Trường `name` sai |\n| `00132` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Đồ đông lạnh\",\n  \"description\": \"Thực phẩm cấp đông\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#16 Danh sách category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/category/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "category",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#17 Đổi tên category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/category/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "category",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00141` | Thành công |\n| `00136` | Thiếu trường bắt buộc |\n| `00136` | Trường `oldName` sai |\n| `00136` | Trường `newName` sai |\n| `00137` | Giá trị mới trùng giá trị cũ |\n| `00138` | Không tìm thấy |\n| `00138` | Không tìm thấy category |\n| `00138` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldName\": \"Đồ đông lạnh\",\n  \"newName\": \"Đông lạnh\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#18 Xóa category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/category/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "category",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00146` | Thành công |\n| `00142` | Thiếu trường bắt buộc |\n| `00142` | Trường `name` sai |\n| `00143` | Không tìm thấy |\n| `00143` | Không tìm thấy category | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#19 Tạo đơn vị",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/unit/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "unit",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00116` | Thành công |\n| `00112` | Thiếu trường bắt buộc |\n| `00112` | Trường `name` sai |\n| `00113` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"thùng\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#20 Danh sách đơn vị",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/unit/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "unit",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#21 Đổi tên đơn vị",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/unit/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "unit",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00122` | Thành công |\n| `00117` | Thiếu trường bắt buộc |\n| `00117` | Trường `oldName` sai |\n| `00117` | Trường `newName` sai |\n| `00118` | Giá trị mới trùng giá trị cũ |\n| `00119` | Không tìm thấy |\n| `00119` | Không tìm thấy đơn vị |\n| `00113` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldName\": \"\",\n  \"newName\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#22 Xóa đơn vị",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/unit/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "unit",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00128` | Thành công |\n| `00123` | Thiếu trường bắt buộc |\n| `00123` | Trường `name` sai |\n| `00125` | Không tìm thấy |\n| `00125` | Không tìm thấy đơn vị | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#23 Xem log hệ thống",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/logs/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "logs",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "userId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "method",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-12-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-01",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00109` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#53 Danh sách tài khoản",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "user",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#53 Khóa / mở khóa tài khoản",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "user",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"minh@dicho.local\",\n  \"status\": \"blocked\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#65 Danh mục thực phẩm chung",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "food",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "scope",
+                  "value": "global",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#65 Thêm thực phẩm chung",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "food",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nấm hương\",\n  \"categoryName\": \"Rau củ\",\n  \"unitName\": \"kg\",\n  \"units\": [\n    {\n      \"unitName\": \"g\",\n      \"factor\": 0.001\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#65 Sửa thực phẩm chung",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "food",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#65 Xóa thực phẩm chung",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "food",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019). Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#66 Xem cấu hình hệ thống",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/config/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "config",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#66 Sửa cấu hình: { expiryDays: 5 } hoặc { key, value }",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/config/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "config",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Chỉ admin (00019)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Thực phẩm",
+      "item": [
+        {
+          "name": "#24 Tạo thực phẩm riêng của nhóm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00160` | Thành công |\n| `00147` | Thiếu trường bắt buộc |\n| `00148` | Trường `name` sai |\n| `00149` | Thiếu `categoryName` |\n| `00149` | Trường `categoryName` sai |\n| `00150` | Thiếu `unitName` |\n| `00150` | Trường `unitName` sai |\n| `00151` | Trùng dữ liệu |\n| `00153` | Không tìm thấy đơn vị |\n| `00155` | Không tìm thấy category |\n| `00156` | Chưa vào nhóm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh bao\",\n  \"foodCategoryName\": \"Khác\",\n  \"unitName\": \"cái\",\n  \"units\": [\n    {\n      \"unitName\": \"gói\",\n      \"factor\": 6\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#25 Sửa thực phẩm của nhóm",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00178` | Thành công |\n| `00161` | Thiếu trường bắt buộc |\n| `00162` | Trường `name` sai |\n| `00163` | Không có trường nào để sửa |\n| `00164` | Trường `newCategory` sai |\n| `00165` | Trường `newUnit` sai |\n| `00166` | Trường `newName` sai |\n| `00167` | Không tìm thấy |\n| `00167` | Không có quyền |\n| `00169` | Không tìm thấy đơn vị |\n| `00171` | Không tìm thấy category |\n| `00173` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh bao\",\n  \"newName\": \"Bánh bao chay\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#26 Xóa thực phẩm của nhóm",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00184` | Thành công |\n| `00179` | Thiếu trường bắt buộc |\n| `00179` | Trường `name` sai |\n| `00180` | Không tìm thấy |\n| `00181` | Không có quyền | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#27 Danh mục thực phẩm (tìm không dấu, lọc category)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00188` | Thành công |\n| `00185` | Chưa vào nhóm |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#28 Danh sách đơn vị",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/unit/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "unit",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00110` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#29 Danh sách category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/food/category/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "category",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00129` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Tủ lạnh",
+      "item": [
+        {
+          "name": "#30 Thêm đồ vào tủ (header Idempotency-Key chống thêm trùng)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fridge/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fridge",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00202` | Thành công |\n| `00190` | Trường `foodName` sai |\n| `00192` | Trường `quantity` sai |\n| `00193` | Trường `note` sai |\n| `00194` | Không tìm thấy thực phẩm |\n| `00196` | Chưa vào nhóm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"foodName\": \"Trứng gà\",\n  \"quantity\": 1,\n  \"unit\": \"hộp\",\n  \"useWithin\": 7,\n  \"storageLocation\": \"Tủ lạnh\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#31 Sửa đồ trong tủ",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fridge/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fridge",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00216` | Thành công |\n| `00203` | Thiếu trường bắt buộc |\n| `00204` | Trường `itemId` sai |\n| `00204` | Không có trường nào để sửa |\n| `00206` | Trường `newQuantity` sai |\n| `00207` | Trường `newNote` sai |\n| `00207` | Trường `newFoodName` sai |\n| `00210` | Chưa vào nhóm |\n| `00213` | Không tìm thấy |\n| `00214` | Không tìm thấy thực phẩm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": 1,\n  \"newQuantity\": 5,\n  \"newUseWithin\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#32 Bỏ đồ khỏi tủ",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fridge/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fridge",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "itemId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "foodName",
+                  "value": "",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00224` | Thành công |\n| `00217` | Thiếu trường bắt buộc |\n| `00217` | Trường `foodName` sai |\n| `00218` | Không tìm thấy thực phẩm |\n| `00221` | Không tìm thấy | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#33 Danh sách đồ trong tủ, hạn gần nhất trước",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fridge/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fridge",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "fridge",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00228` | Thành công |\n| `00225` | Chưa vào nhóm |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#34 Đồ trong tủ theo tên thực phẩm",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fridge/:foodName/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fridge",
+                ":foodName",
+                ""
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "foodName",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00237` | Thành công |\n| `00229` | Thiếu trường bắt buộc |\n| `00229` | Trường `foodName` sai |\n| `00230` | Không tìm thấy thực phẩm |\n| `00234` | Không tìm thấy |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8. Mua sắm",
+      "item": [
+        {
+          "name": "#35 Tạo danh sách mua sắm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00249` | Thành công |\n| `00238` | Thiếu trường bắt buộc |\n| `00239` | Thiếu `name` |\n| `00239` | Trường `name` sai |\n| `00241` | Trường `note` sai |\n| `00242` | Trường `date` sai |\n| `00245` | Người được giao không thuộc nhóm |\n| `00246` | Không có quyền giao cho người khác |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Đi chợ cuối tuần\",\n  \"assignToUsername\": \"minh@dicho.local\",\n  \"date\": \"2026-12-05\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#36 Sửa danh sách (trưởng nhóm / người tạo)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00266` | Thành công |\n| `00250` | Thiếu trường bắt buộc |\n| `00251` | Trường `listId` sai |\n| `00252` | Không có trường nào để sửa |\n| `00253` | Trường `newName` sai |\n| `00254` | Trường `newAssignToUsername` sai |\n| `00255` | Trường `newNote` sai |\n| `00256` | Trường `newDate` sai |\n| `00260` | Không tìm thấy |\n| `00261` | Không có quyền |\n| `00262` | Người được giao không thuộc nhóm |\n| `00263` | Không có quyền giao cho người khác |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listId\": 1,\n  \"newName\": \"Đi chợ thứ bảy\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#37 Xóa danh sách (trưởng nhóm / người tạo)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "listId",
+                  "value": "1",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00275` | Thành công |\n| `00267` | Thiếu trường bắt buộc |\n| `00268` | Trường `listId` sai |\n| `00272` | Không tìm thấy |\n| `00273` | Không có quyền | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#38 Thêm mặt hàng (trùng món thì không thêm món nào)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/task/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "task",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00287` | Thành công |\n| `00276` | Thiếu trường bắt buộc |\n| `00277` | Thiếu `listId` |\n| `00277` | Trường `listId` sai |\n| `00278` | Thiếu `tasks` |\n| `00279` | Trường `tasks` sai |\n| `00283` | Không tìm thấy |\n| `00284` | Không có quyền |\n| `00284` | Không có quyền giao cho người khác |\n| `00285` | Không tìm thấy thực phẩm |\n| `00285` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listId\": 1,\n  \"tasks\": [\n    {\n      \"foodName\": \"Cà chua\",\n      \"quantity\": 0.5,\n      \"unit\": \"kg\"\n    },\n    {\n      \"foodName\": \"Trứng gà\",\n      \"quantity\": 1,\n      \"unit\": \"hộp\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#39 Danh sách mặt hàng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/task/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "task",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "listId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "mine",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "todo",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00292` | Thành công |\n| `00288` | Chưa vào nhóm |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#40 Xóa mặt hàng",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/task/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "task",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "taskId",
+                  "value": "1",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00299` | Thành công |\n| `00293` | Thiếu trường bắt buộc |\n| `00294` | Trường `taskId` sai |\n| `00296` | Không tìm thấy |\n| `00297` | Không có quyền | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#41 Sửa mặt hàng",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/task/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "task",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00312` | Thành công |\n| `00300` | Thiếu trường bắt buộc |\n| `00301` | Trường `taskId` sai |\n| `00302` | Không có trường nào để sửa |\n| `00303` | Trường `newFoodName` sai |\n| `00304` | Trường `newQuantity` sai |\n| `00306` | Không tìm thấy |\n| `00307` | Không có quyền |\n| `00307` | Không có quyền giao cho người khác |\n| `00308` | Không tìm thấy thực phẩm |\n| `00309` | Trùng dữ liệu |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskId\": 1,\n  \"newQuantity\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#51 Các danh sách mua sắm kèm mặt hàng",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "date",
+                  "value": "2026-12-01",
+                  "disabled": true
+                },
+                {
+                  "key": "mine",
+                  "value": "true",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#52 Đánh dấu đã mua → cộng vào tủ lạnh (done=false để hoàn tác)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/task/done/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "task",
+                "done",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskId\": 1,\n  \"done\": true,\n  \"expiryDate\": \"2026-12-10\",\n  \"storageLocation\": \"Tủ lạnh\",\n  \"totalCost\": 35000\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#59 Sao chép danh sách cũ để dùng lại",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shopping/copy/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shopping",
+                "copy",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listId\": 1,\n  \"date\": \"2026-12-12\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "9. Bữa ăn",
+      "item": [
+        {
+          "name": "#42 Thêm món vào bữa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00322` | Thành công |\n| `00313` | Thiếu trường bắt buộc |\n| `00314` | Trường `foodName` sai |\n| `00315` | Trường `date` sai |\n| `00316` | Trường `mealType` sai |\n| `00317` | Không tìm thấy thực phẩm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": 1,\n  \"timestamp\": \"2026-12-05\",\n  \"name\": \"tối\",\n  \"servings\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#43 Xóa món khỏi bữa",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "planId",
+                  "value": "1",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00330` | Thành công |\n| `00323` | Thiếu trường bắt buộc |\n| `00324` | Trường `planId` sai |\n| `00325` | Không tìm thấy | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#44 Sửa món (không có planId thì tạo mới)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00344` | Thành công |\n| `00331` | Thiếu trường bắt buộc |\n| `00332` | Thiếu `planId` |\n| `00332` | Trường `planId` sai |\n| `00333` | Không có trường nào để sửa |\n| `00334` | Trường `newFoodName` sai |\n| `00335` | Trường `newDate` sai |\n| `00336` | Trường `newMealType` sai |\n| `00337` | Không tìm thấy |\n| `00341` | Không tìm thấy thực phẩm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planId\": 1,\n  \"newName\": \"trưa\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#45 Xem theo ngày hoặc tuần (from/to, tối đa 62 ngày)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-12-01",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-12-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-01",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00348` | Thành công |\n| `00345` | Chưa vào nhóm |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#60 Nấu xong: trừ nguyên liệu khỏi tủ lạnh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/meal/cook/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meal",
+                "cook",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planId\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10. Công thức",
+      "item": [
+        {
+          "name": "#46 Tạo công thức",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00357` | Thành công |\n| `00349` | Thiếu trường bắt buộc |\n| `00350` | Trường `foodName` sai |\n| `00351` | Trường `name` sai |\n| `00352` | Trường `description` sai |\n| `00353` | Trường `htmlContent` sai |\n| `00354` | Không tìm thấy thực phẩm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trứng hấp\",\n  \"htmlContent\": \"<ol><li>Đánh trứng</li><li>Hấp 10 phút</li></ol>\",\n  \"servings\": 2,\n  \"ingredients\": [\n    {\n      \"foodName\": \"Trứng gà\",\n      \"quantity\": 3,\n      \"unit\": \"quả\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#47 Sửa công thức",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00370` | Thành công |\n| `00358` | Thiếu trường bắt buộc |\n| `00359` | Thiếu `recipeId` |\n| `00359` | Trường `recipeId` sai |\n| `00360` | Không có trường nào để sửa |\n| `00361` | Trường `newFoodName` sai |\n| `00362` | Trường `newDescription` sai |\n| `00363` | Trường `newHtmlContent` sai |\n| `00364` | Trường `newName` sai |\n| `00365` | Không tìm thấy |\n| `00367` | Không tìm thấy thực phẩm |",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": 1,\n  \"newName\": \"Trứng hấp thịt\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#48 Xóa công thức",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "recipeId",
+                  "value": "1",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00376` | Thành công |\n| `00371` | Thiếu trường bắt buộc |\n| `00372` | Trường `recipeId` sai |\n| `00373` | Không tìm thấy | Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#49 Danh sách công thức (lọc foodId, q, favorite)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "foodId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "favorite",
+                  "value": "true",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.\n\nMã theo tài liệu môn học:\n\n| code | Trường hợp |\n| --- | --- |\n| `00378` | Thành công |"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#54 Gợi ý món từ đồ trong tủ",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/suggest/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                "suggest",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#56 Thêm công thức yêu thích",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/favorite/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                "favorite",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#57 Bỏ công thức yêu thích",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/favorite/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                "favorite",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "recipeId",
+                  "value": "1",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình. Tham số gửi trong query hoặc body."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#58 Công thức yêu thích của tôi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recipe/favorite/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recipe",
+                "favorite",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "foodId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "favorite",
+                  "value": "true",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "11. Thống kê",
+      "item": [
+        {
+          "name": "#55 Thống kê mua sắm và tiêu thụ",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/report/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "report",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-12-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-01",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "12. Thông báo",
+      "item": [
+        {
+          "name": "#63 Hộp thư thông báo nhắc hết hạn",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "unread",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "disabled": true
+                }
+              ],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "#64 Đánh dấu đã đọc (bỏ trống ids = tất cả)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notification/read/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notification",
+                "read",
+                ""
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "Cần đăng nhập. Phải đang ở một nhóm gia đình.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": []\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Trả về đúng format { code, message, data }', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.keys(['code', 'message', 'data']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
